@@ -7,8 +7,16 @@ import '../../../shared/models/hearing.dart';
 import '../../../shared/models/client.dart';
 import '../../hearings/presentation/add_edit_hearing_screen.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
+
+  @override
+  State<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  final TextEditingController _officeController =
+      TextEditingController(text: 'Jolly Law Office');
 
   Widget _statCard(
     IconData icon,
@@ -67,8 +75,55 @@ class DashboardScreen extends StatelessWidget {
 
             return Scaffold(
               appBar: AppBar(
-                title: const Text('Dashboard'),
                 centerTitle: true,
+                title: const Text('Dashboard'),
+                flexibleSpace: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.indigo, Colors.blue],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                ),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(50),
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: TextField(
+                        controller: _officeController,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          hintText: 'Jolly Law Office',
+                          hintStyle: TextStyle(
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                        onSubmitted: (value) {
+                          // Optionally, save the name to Hive or SharedPreferences
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Office name updated: $value'),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
               ),
               body: Padding(
                 padding: const EdgeInsets.all(12),
@@ -145,3 +200,4 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 }
+
