@@ -113,7 +113,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                         textAlign: TextAlign.center,
                         onSubmitted: (value) {
-                          // Optionally, save the name to Hive or SharedPreferences
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('Office name updated: $value'),
@@ -127,70 +126,66 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               body: Padding(
                 padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _statCard(
-                            Icons.people,
-                            'Clients',
-                            clientBox.length,
-                            Colors.blue,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _statCard(
+                              Icons.people,
+                              'Clients',
+                              clientBox.length,
+                              Colors.blue,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _statCard(
-                            Icons.gavel,
-                            'Soon',
-                            soonCount,
-                            soonCount > 0 ? Colors.orange : Colors.green,
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _statCard(
+                              Icons.gavel,
+                              'Soon',
+                              soonCount,
+                              soonCount > 0 ? Colors.orange : Colors.green,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    const Text(
-                      'Upcoming Hearings',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Expanded(
-                      child: upcoming.isEmpty
-                          ? const Center(
-                              child: Text('No upcoming hearings'),
-                            )
-                          : ListView.builder(
-                              itemCount: upcoming.length,
-                              itemBuilder: (_, i) {
-                                final h = upcoming[i];
-                                return Card(
-                                  child: ListTile(
-                                    title: Text(h.caseTitle),
-                                    subtitle: Text(
-                                      DateFormat('MMM d, h:mm a')
-                                          .format(h.dateTime),
-                                    ),
-                                    trailing: const Icon(Icons.edit),
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) =>
-                                              AddEditHearingScreen(
-                                                  hearing: h),
-                                        ),
-                                      );
-                                    },
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      const Text(
+                        'Upcoming Hearings',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: upcoming.length,
+                        itemBuilder: (_, i) {
+                          final h = upcoming[i];
+                          return Card(
+                            child: ListTile(
+                              title: Text(h.caseTitle),
+                              subtitle: Text(
+                                DateFormat('MMM d, h:mm a').format(h.dateTime),
+                              ),
+                              trailing: const Icon(Icons.edit),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        AddEditHearingScreen(hearing: h),
                                   ),
                                 );
                               },
                             ),
-                    ),
-                  ],
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );

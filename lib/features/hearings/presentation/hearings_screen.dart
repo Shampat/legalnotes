@@ -52,9 +52,11 @@ class _HearingsScreenState extends State<HearingsScreen> with AutomaticKeepAlive
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           title: Text(isEdit ? 'Edit Hearing' : 'New Hearing'),
-          content: SizedBox(
-            width: double.maxFinite,
-            height: MediaQuery.of(context).size.height * 0.55,
+          content: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.75,
+              minWidth: MediaQuery.of(context).size.width * 0.7,
+            ),
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -189,7 +191,47 @@ class _HearingsScreenState extends State<HearingsScreen> with AutomaticKeepAlive
               ),
             ],
           ),
-          body: _showListView ? _buildListView(hearings) : _buildCalendarView(hearingsOnSelectedDay),
+          body: _showListView
+              ? _buildListView(hearings)
+              : SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      TableCalendar<Hearing>(
+                        firstDay: DateTime.utc(2020, 1, 1),
+                        lastDay: DateTime.utc(2030, 12, 31),
+                        focusedDay: _focusedDay,
+                        calendarFormat: _calendarFormat,
+                        selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                        onDaySelected: (selectedDay, focusedDay) {
+                          setState(() {
+                            _selectedDay = selectedDay;
+                            _focusedDay = focusedDay;
+                          });
+                        },
+                        onFormatChanged: (format) => setState(() => _calendarFormat = format),
+                        onPageChanged: (focusedDay) => _focusedDay = focusedDay,
+                        eventLoader: _getHearingsForDay,
+                        headerStyle: const HeaderStyle(formatButtonVisible: true, titleCentered: true),
+                      ),
+                      const Divider(height: 1),
+                      ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: hearingsOnSelectedDay.length,
+                        itemBuilder: (_, i) {
+                          final h = hearingsOnSelectedDay[i];
+                          return ListTile(
+                            title: Text(h.caseTitle),
+                            subtitle: Text(
+                                '${h.getClientName()} • ${TimeOfDay.fromDateTime(h.dateTime).format(context)} • ${h.court.isEmpty ? 'Court TBD' : h.court}'),
+                            trailing: IconButton(icon: const Icon(Icons.delete, color: Colors.red), onPressed: () => _deleteHearing(h)),
+                            onTap: () => _addOrEditHearing(h),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
           floatingActionButton: _clientsBox.isEmpty
               ? null
               : FloatingActionButton(
@@ -198,47 +240,6 @@ class _HearingsScreenState extends State<HearingsScreen> with AutomaticKeepAlive
                 ),
         );
       },
-    );
-  }
-
-  Widget _buildCalendarView(List<Hearing> hearingsOnSelectedDay) {
-    return Column(
-      children: [
-        TableCalendar<Hearing>(
-          firstDay: DateTime.utc(2020, 1, 1),
-          lastDay: DateTime.utc(2030, 12, 31),
-          focusedDay: _focusedDay,
-          calendarFormat: _calendarFormat,
-          selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-          onDaySelected: (selectedDay, focusedDay) {
-            setState(() {
-              _selectedDay = selectedDay;
-              _focusedDay = focusedDay;
-            });
-          },
-          onFormatChanged: (format) => setState(() => _calendarFormat = format),
-          onPageChanged: (focusedDay) => _focusedDay = focusedDay,
-          eventLoader: _getHearingsForDay,
-          headerStyle: const HeaderStyle(formatButtonVisible: true, titleCentered: true),
-        ),
-        const Divider(height: 1),
-        Expanded(
-          child: hearingsOnSelectedDay.isEmpty
-              ? const Center(child: Text('No hearings on this day'))
-              : ListView.builder(
-                  itemCount: hearingsOnSelectedDay.length,
-                  itemBuilder: (_, i) {
-                    final h = hearingsOnSelectedDay[i];
-                    return ListTile(
-                      title: Text(h.caseTitle),
-                      subtitle: Text('${h.getClientName()} • ${TimeOfDay.fromDateTime(h.dateTime).format(context)} • ${h.court.isEmpty ? 'Court TBD' : h.court}'),
-                      trailing: IconButton(icon: const Icon(Icons.delete, color: Colors.red), onPressed: () => _deleteHearing(h)),
-                      onTap: () => _addOrEditHearing(h),
-                    );
-                  },
-                ),
-        ),
-      ],
     );
   }
 
@@ -251,7 +252,8 @@ class _HearingsScreenState extends State<HearingsScreen> with AutomaticKeepAlive
               final h = hearings[i];
               return ListTile(
                 title: Text(h.caseTitle),
-                subtitle: Text('${h.getClientName()}\n${h.dateTime.toLocal().toString().split(' ')[0]} at ${TimeOfDay.fromDateTime(h.dateTime).format(context)}'),
+                subtitle: Text(
+                    '${h.getClientName()}\n${h.dateTime.toLocal().toString().split(' ')[0]} at ${TimeOfDay.fromDateTime(h.dateTime).format(context)}'),
                 isThreeLine: true,
                 trailing: IconButton(icon: const Icon(Icons.delete, color: Colors.red), onPressed: () => _deleteHearing(h)),
                 onTap: () => _addOrEditHearing(h),
@@ -260,3 +262,4 @@ class _HearingsScreenState extends State<HearingsScreen> with AutomaticKeepAlive
           );
   }
 }
+
