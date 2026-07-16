@@ -3,26 +3,30 @@ import '../../../shared/models/client.dart';
 import '../../../shared/models/hearing.dart';
 import '../../../shared/models/payment.dart';
 import '../../../shared/models/document.dart';
+import '../../../shared/models/communication_log.dart';
 
 class HiveService {
   static const String clientsBoxName = 'clients';
   static const String hearingsBoxName = 'hearings';
   static const String paymentsBoxName = 'payments';
   static const String documentsBoxName = 'documents';
+  static const String communicationLogsBoxName = 'communication_logs';
+  static const String settingsBoxName = 'settings';
 
   static Future<void> init() async {
     await Hive.initFlutter();
-
     Hive.registerAdapter(ClientAdapter());
     Hive.registerAdapter(HearingAdapter());
     Hive.registerAdapter(PaymentAdapter());
     Hive.registerAdapter(DocumentAdapter());
-
+    Hive.registerAdapter(CommunicationLogAdapter());
     await Future.wait([
       Hive.openBox<Client>(clientsBoxName),
       Hive.openBox<Hearing>(hearingsBoxName),
       Hive.openBox<Payment>(paymentsBoxName),
       Hive.openBox<Document>(documentsBoxName),
+      Hive.openBox<CommunicationLog>(communicationLogsBoxName),
+      Hive.openBox(settingsBoxName),
     ]);
   }
 
@@ -30,4 +34,7 @@ class HiveService {
   static Box<Hearing> get hearingsBox => Hive.box<Hearing>(hearingsBoxName);
   static Box<Payment> get paymentsBox => Hive.box<Payment>(paymentsBoxName);
   static Box<Document> get documentsBox => Hive.box<Document>(documentsBoxName);
+  static Box get settingsBox => Hive.box(settingsBoxName);
+  static Box<CommunicationLog> get communicationLogsBox =>
+      Hive.box<CommunicationLog>(communicationLogsBoxName);
 }

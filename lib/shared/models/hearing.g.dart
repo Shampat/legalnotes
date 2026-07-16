@@ -22,13 +22,14 @@ class HearingAdapter extends TypeAdapter<Hearing> {
       dateTime: fields[2] as DateTime,
       court: fields[3] as String,
       notes: fields[4] as String,
+      opposingParty: fields[5] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Hearing obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.caseTitle)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class HearingAdapter extends TypeAdapter<Hearing> {
       ..writeByte(3)
       ..write(obj.court)
       ..writeByte(4)
-      ..write(obj.notes);
+      ..write(obj.notes)
+      ..writeByte(5)
+      ..write(obj.opposingParty);
   }
 
   @override

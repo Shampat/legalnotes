@@ -38,8 +38,8 @@ class Document extends HiveObject {
 
   String getClientName() {
     final clientBox = Hive.box<Client>('clients');
-    final client = clientBox.get(clientKey);
-    return client?.name ?? 'Unknown Client';
+    final client = clientBox.get(int.tryParse(clientKey));
+    return client?.fullName ?? 'Unknown Client';
   }
 
   bool get hasAttachment => filePath != null && filePath!.isNotEmpty;

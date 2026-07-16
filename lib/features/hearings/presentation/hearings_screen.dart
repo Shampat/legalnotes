@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../../../core/services/database/hive_service.dart';
 import '../../../shared/models/hearing.dart';
 import '../../../shared/models/client.dart';
+import 'add_edit_hearing_screen.dart';
 
 class HearingsScreen extends StatefulWidget {
   const HearingsScreen({super.key});
@@ -12,7 +13,8 @@ class HearingsScreen extends StatefulWidget {
   State<HearingsScreen> createState() => _HearingsScreenState();
 }
 
-class _HearingsScreenState extends State<HearingsScreen> with AutomaticKeepAliveClientMixin {
+class _HearingsScreenState extends State<HearingsScreen>
+    with AutomaticKeepAliveClientMixin {
   late final Box<Hearing> _hearingsBox;
   late final Box<Client> _clientsBox;
   CalendarFormat _calendarFormat = CalendarFormat.month;
@@ -35,118 +37,24 @@ class _HearingsScreenState extends State<HearingsScreen> with AutomaticKeepAlive
     final start = DateTime(day.year, day.month, day.day);
     final end = start.add(const Duration(days: 1));
     return _hearingsBox.values
-        .where((h) => h.dateTime.isAfter(start.subtract(const Duration(seconds: 1))) && h.dateTime.isBefore(end))
-        .toList();
+        .where((h) =>
+            h.dateTime.isAfter(
+                start.subtract(const Duration(seconds: 1))) &&
+            h.dateTime.isBefore(end))
+        .toList()
+      ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
   }
 
-  void _addOrEditHearing([Hearing? hearing]) async {
-    final isEdit = hearing != null;
-    final titleController = TextEditingController(text: isEdit ? hearing.caseTitle : '');
-    final courtController = TextEditingController(text: isEdit ? hearing.court : '');
-    final notesController = TextEditingController(text: isEdit ? hearing.notes : '');
-    DateTime selectedDate = isEdit ? hearing.dateTime : DateTime.now();
-    int? selectedClientKey = isEdit ? hearing.clientKey : null;
-
-    final saved = await showDialog<bool>(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setDialogState) => AlertDialog(
-          title: Text(isEdit ? 'Edit Hearing' : 'New Hearing'),
-          content: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.75,
-              minWidth: MediaQuery.of(context).size.width * 0.7,
-            ),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  DropdownButtonFormField<int>(
-                    value: selectedClientKey,
-                    hint: const Text('Select Client'),
-                    items: _clientsBox.keys.map((key) {
-                      final client = _clientsBox.get(key)!;
-                      return DropdownMenuItem<int>(
-                        value: key as int,
-                        child: Text(client.name),
-                      );
-                    }).toList(),
-                    onChanged: (value) => setDialogState(() => selectedClientKey = value),
-                    decoration: InputDecoration(
-                      labelText: 'Client',
-                      filled: true,
-                      fillColor: Theme.of(context).colorScheme.surfaceVariant,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  TextField(controller: titleController, decoration: const InputDecoration(labelText: 'Case Title')),
-                  const SizedBox(height: 6),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text('Date & Time: ${selectedDate.toLocal().toString().split('.')[0]}'),
-                    trailing: const Icon(Icons.calendar_today, size: 18),
-                    onTap: () async {
-                      final date = await showDatePicker(
-                        context: context,
-                        initialDate: selectedDate,
-                        firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                        lastDate: DateTime(2030),
-                      );
-                      if (date != null) {
-                        final time = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.fromDateTime(selectedDate),
-                        );
-                        if (time != null) {
-                          selectedDate = DateTime(date.year, date.month, date.day, time.hour, time.minute);
-                          setDialogState(() {});
-                        }
-                      }
-                    },
-                  ),
-                  const SizedBox(height: 6),
-                  TextField(controller: courtController, decoration: const InputDecoration(labelText: 'Court')),
-                  const SizedBox(height: 6),
-                  TextField(controller: notesController, decoration: const InputDecoration(labelText: 'Notes'), maxLines: 3),
-                ],
-              ),
-            ),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-            ElevatedButton(
-              onPressed: selectedClientKey == null || titleController.text.trim().isEmpty
-                  ? null
-                  : () async {
-                      if (isEdit) {
-                        hearing!
-                          ..caseTitle = titleController.text.trim()
-                          ..clientKey = selectedClientKey!
-                          ..dateTime = selectedDate
-                          ..court = courtController.text.trim()
-                          ..notes = notesController.text.trim();
-                        await hearing.save();
-                      } else {
-                        final newHearing = Hearing(
-                          clientKey: selectedClientKey!,
-                          caseTitle: titleController.text.trim(),
-                          dateTime: selectedDate,
-                          court: courtController.text.trim(),
-                          notes: notesController.text.trim(),
-                        );
-                        await _hearingsBox.add(newHearing);
-                      }
-                      if (mounted) Navigator.pop(context, true);
-                    },
-              child: Text(isEdit ? 'Update' : 'Add'),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    if (saved == true && mounted) setState(() {});
+  Color _hearingColor(Hearing h) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final hDay =
+        DateTime(h.dateTime.year, h.dateTime.month, h.dateTime.day);
+    if (hDay == today) return Colors.red.shade700;
+    if (hDay.isBefore(today.add(const Duration(days: 7)))) {
+      return Colors.orange.shade700;
+    }
+    return const Color(0xFF000080);
   }
 
   void _deleteHearing(Hearing hearing) {
@@ -156,19 +64,32 @@ class _HearingsScreenState extends State<HearingsScreen> with AutomaticKeepAlive
         title: const Text('Delete Hearing?'),
         content: Text('Delete "${hearing.caseTitle}"?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('No')),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('No')),
           ElevatedButton(
+            style:
+                ElevatedButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () {
               hearing.delete();
               Navigator.pop(context);
               setState(() {});
             },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
             child: const Text('Yes'),
           ),
         ],
       ),
     );
+  }
+
+  void _openHearing([Hearing? hearing]) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => AddEditHearingScreen(hearing: hearing),
+      ),
+    );
+    setState(() {});
   }
 
   @override
@@ -178,16 +99,35 @@ class _HearingsScreenState extends State<HearingsScreen> with AutomaticKeepAlive
     return ValueListenableBuilder(
       valueListenable: _hearingsBox.listenable(),
       builder: (_, Box<Hearing> box, __) {
-        final hearings = box.values.toList()..sort((a, b) => a.dateTime.compareTo(b.dateTime));
-        final hearingsOnSelectedDay = _selectedDay != null ? _getHearingsForDay(_selectedDay!) : <Hearing>[];
+        final hearings = box.values.toList()
+          ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
+        final hearingsOnSelectedDay = _selectedDay != null
+            ? _getHearingsForDay(_selectedDay!)
+            : <Hearing>[];
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Hearings'),
+            title: const Text('Hearings',
+                style: TextStyle(color: Colors.white)),
+            centerTitle: true,
+            flexibleSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.indigo, Color(0xFF000080)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+            ),
             actions: [
               IconButton(
-                icon: Icon(_showListView ? Icons.calendar_today : Icons.list),
-                onPressed: () => setState(() => _showListView = !_showListView),
+                icon: Icon(
+                    _showListView
+                        ? Icons.calendar_today
+                        : Icons.list,
+                    color: Colors.white),
+                onPressed: () =>
+                    setState(() => _showListView = !_showListView),
               ),
             ],
           ),
@@ -195,71 +135,166 @@ class _HearingsScreenState extends State<HearingsScreen> with AutomaticKeepAlive
               ? _buildListView(hearings)
               : SingleChildScrollView(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TableCalendar<Hearing>(
                         firstDay: DateTime.utc(2020, 1, 1),
                         lastDay: DateTime.utc(2030, 12, 31),
                         focusedDay: _focusedDay,
                         calendarFormat: _calendarFormat,
-                        selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                        selectedDayPredicate: (day) =>
+                            isSameDay(_selectedDay, day),
                         onDaySelected: (selectedDay, focusedDay) {
                           setState(() {
                             _selectedDay = selectedDay;
                             _focusedDay = focusedDay;
                           });
                         },
-                        onFormatChanged: (format) => setState(() => _calendarFormat = format),
-                        onPageChanged: (focusedDay) => _focusedDay = focusedDay,
+                        onFormatChanged: (format) =>
+                            setState(() => _calendarFormat = format),
+                        onPageChanged: (focusedDay) =>
+                            _focusedDay = focusedDay,
                         eventLoader: _getHearingsForDay,
-                        headerStyle: const HeaderStyle(formatButtonVisible: true, titleCentered: true),
+                        calendarStyle: CalendarStyle(
+                          todayDecoration: BoxDecoration(
+                            color: Colors.red.shade300,
+                            shape: BoxShape.circle,
+                          ),
+                          selectedDecoration: const BoxDecoration(
+                            color: Color(0xFF000080),
+                            shape: BoxShape.circle,
+                          ),
+                          markerDecoration: const BoxDecoration(
+                            color: Colors.orange,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        headerStyle: const HeaderStyle(
+                          formatButtonVisible: true,
+                          titleCentered: true,
+                          titleTextStyle: TextStyle(
+                              color: Colors.indigo,
+                              fontWeight: FontWeight.bold),
+                          formatButtonTextStyle:
+                              TextStyle(color: Colors.indigo),
+                          leftChevronIcon: Icon(Icons.chevron_left,
+                              color: Colors.indigo),
+                          rightChevronIcon: Icon(Icons.chevron_right,
+                              color: Colors.indigo),
+                        ),
                       ),
                       const Divider(height: 1),
-                      ListView.builder(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: hearingsOnSelectedDay.length,
-                        itemBuilder: (_, i) {
-                          final h = hearingsOnSelectedDay[i];
-                          return ListTile(
-                            title: Text(h.caseTitle),
-                            subtitle: Text(
-                                '${h.getClientName()} • ${TimeOfDay.fromDateTime(h.dateTime).format(context)} • ${h.court.isEmpty ? 'Court TBD' : h.court}'),
-                            trailing: IconButton(icon: const Icon(Icons.delete, color: Colors.red), onPressed: () => _deleteHearing(h)),
-                            onTap: () => _addOrEditHearing(h),
-                          );
-                        },
-                      ),
+
+                      // Selected day hearings
+                      if (hearingsOnSelectedDay.isEmpty)
+                        const Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Center(
+                              child: Text('No hearings on this day',
+                                  style:
+                                      TextStyle(color: Colors.grey))),
+                        )
+                      else
+                        ...hearingsOnSelectedDay
+                            .map((h) => _hearingTile(h, _hearingColor(h))),
+
+                      const SizedBox(height: 80),
                     ],
                   ),
                 ),
           floatingActionButton: _clientsBox.isEmpty
               ? null
               : FloatingActionButton(
-                  onPressed: () => _addOrEditHearing(),
-                  child: const Icon(Icons.add),
+                  backgroundColor: const Color(0xFF000080),
+                  onPressed: () => _openHearing(),
+                  child: const Icon(Icons.add, color: Colors.white),
                 ),
         );
       },
     );
   }
 
+  Widget _hearingTile(Hearing h, Color color) {
+    return Card(
+      shape: RoundedRectangleBorder(
+        side: BorderSide(color: color, width: 1.5),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      child: ListTile(
+        leading: Icon(Icons.gavel, color: color),
+        title: Text(
+          h.caseTitle,
+          style:
+              TextStyle(fontWeight: FontWeight.bold, color: color),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+                '${h.getClientName()} • ${TimeOfDay.fromDateTime(h.dateTime).format(context)}'),
+            if (h.court.isNotEmpty)
+              Text(h.court,
+                  style: const TextStyle(fontSize: 12)),
+            if (h.opposingParty.isNotEmpty)
+              Text('vs ${h.opposingParty}',
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.red.shade400,
+                      fontStyle: FontStyle.italic)),
+          ],
+        ),
+        isThreeLine: true,
+        trailing: const Icon(Icons.chevron_right, color: Color(0xFF000080)),
+        onTap: () => _openHearing(h),
+      ),
+    );
+  }
+
   Widget _buildListView(List<Hearing> hearings) {
-    return hearings.isEmpty
-        ? const Center(child: Text('No hearings yet\nTap + to add one'))
-        : ListView.builder(
-            itemCount: hearings.length,
-            itemBuilder: (_, i) {
-              final h = hearings[i];
-              return ListTile(
-                title: Text(h.caseTitle),
-                subtitle: Text(
-                    '${h.getClientName()}\n${h.dateTime.toLocal().toString().split(' ')[0]} at ${TimeOfDay.fromDateTime(h.dateTime).format(context)}'),
-                isThreeLine: true,
-                trailing: IconButton(icon: const Icon(Icons.delete, color: Colors.red), onPressed: () => _deleteHearing(h)),
-                onTap: () => _addOrEditHearing(h),
-              );
-            },
-          );
+    if (hearings.isEmpty) {
+      return const Center(
+          child: Text('No hearings yet\nTap + to add one'));
+    }
+    return ListView.builder(
+      itemCount: hearings.length,
+      itemBuilder: (_, i) {
+        final h = hearings[i];
+        final color = _hearingColor(h);
+        return Card(
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: color, width: 1.5),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          margin:
+              const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          child: ListTile(
+            leading: Icon(Icons.gavel, color: color),
+            title: Text(h.caseTitle,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, color: color)),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                    '${h.getClientName()} • ${h.dateTime.toLocal().toString().split(' ')[0]} at ${TimeOfDay.fromDateTime(h.dateTime).format(context)}'),
+                if (h.court.isNotEmpty) Text(h.court),
+                if (h.opposingParty.isNotEmpty)
+                  Text('vs ${h.opposingParty}',
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.red.shade400,
+                          fontStyle: FontStyle.italic)),
+              ],
+            ),
+            isThreeLine: true,
+            trailing: IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red),
+                onPressed: () => _deleteHearing(h)),
+            onTap: () => _openHearing(h),
+          ),
+        );
+      },
+    );
   }
 }
-
