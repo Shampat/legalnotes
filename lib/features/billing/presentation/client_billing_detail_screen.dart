@@ -350,7 +350,10 @@ class _ClientBillingDetailScreenState
 
         final totalPaid =
             payments.fold(0.0, (sum, p) => sum + p.totalAmount);
-        final balanceDue = client.totalInvoiced - totalPaid;
+        final invoiceTaxAmount =
+            client.totalInvoiced * (client.invoiceTaxRate / 100);
+        final totalInvoicedWithTax = client.totalInvoiced + invoiceTaxAmount;
+        final balanceDue = totalInvoicedWithTax - totalPaid;
 
         return Scaffold(
           appBar: AppBar(
@@ -371,11 +374,6 @@ class _ClientBillingDetailScreenState
                 icon: const Icon(Icons.download, color: Colors.white),
                 onPressed: _exportToCSV,
                 tooltip: "Export to CSV",
-              ),
-              IconButton(
-                icon: const Icon(Icons.edit, color: Colors.white),
-                onPressed: _editTotalInvoiced,
-                tooltip: "Edit Total Invoiced",
               ),
             ],
           ),
@@ -413,9 +411,20 @@ class _ClientBillingDetailScreenState
                       ],
                     ),
                     const Divider(),
-                    _summaryRow('Total Quoted/Invoiced',
+                    _summaryRow('Amount Quoted/Invoiced (pre-tax)',
                         '\$${client.totalInvoiced.toStringAsFixed(2)}',
-                        Colors.black87, bold: true),
+                        Colors.black87),
+                    if (client.invoiceTaxRate > 0) ...[
+                      const SizedBox(height: 4),
+                      _summaryRow(
+                          'Tax on Invoice (${client.invoiceTaxRate.toStringAsFixed(0)}%)',
+                          '\$${invoiceTaxAmount.toStringAsFixed(2)}',
+                          Colors.orange.shade700),
+                      const SizedBox(height: 4),
+                      _summaryRow('Total Invoiced (incl. tax)',
+                          '\$${totalInvoicedWithTax.toStringAsFixed(2)}',
+                          Colors.black87, bold: true),
+                    ],
                     const SizedBox(height: 8),
                     _summaryRow('Subtotal Received',
                         '\$${payments.fold(0.0, (s, p) => s + p.amount).toStringAsFixed(2)}',
@@ -577,11 +586,15 @@ class _ClientBillingDetailScreenState
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(label,
-            style: TextStyle(
-                fontSize: fontSize,
-                color: Colors.black54,
-                fontWeight: bold ? FontWeight.bold : FontWeight.normal)),
+        Expanded(
+          child: Text(label,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                  fontSize: fontSize,
+                  color: Colors.black54,
+                  fontWeight: bold ? FontWeight.bold : FontWeight.normal)),
+        ),
+        const SizedBox(width: 8),
         Text(value,
             style: TextStyle(
                 fontSize: fontSize,
