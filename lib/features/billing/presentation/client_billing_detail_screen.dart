@@ -139,9 +139,8 @@ class _ClientBillingDetailScreenState
         TextEditingController(text: isEdit ? payment.description : "");
     DateTime paidDate =
         isEdit ? (payment.paidDate ?? DateTime.now()) : DateTime.now();
-    final taxRateCtrl = TextEditingController(
-        text: isEdit && payment.taxRate > 0 ? payment.taxRate.toString() : '');
     String modeOfPayment = isEdit ? payment.modeOfPayment : 'bank_transfer';
+    bool isRetainer = isEdit ? payment.isRetainer : false;
 
     await showDialog(
       context: context,
@@ -229,28 +228,20 @@ class _ClientBillingDetailScreenState
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: taxRateCtrl,
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                      labelText: 'Tax %  (leave empty if no tax)',
-                      hintText: 'e.g. 13',
-                    ),
-                    onChanged: (_) => setDialogState(() {}),
+                  const SizedBox(height: 4),
+                  CheckboxListTile(
+                    title: const Text("Mark as Retainer / Deposit",
+                        style: TextStyle(fontSize: 13)),
+                    subtitle: const Text(
+                        "First payment received to begin work",
+                        style: TextStyle(fontSize: 11, color: Colors.grey)),
+                    value: isRetainer,
+                    onChanged: (val) =>
+                        setDialogState(() => isRetainer = val ?? false),
+                    controlAffinity: ListTileControlAffinity.leading,
+                    contentPadding: EdgeInsets.zero,
+                    dense: true,
                   ),
-                  if ((double.tryParse(taxRateCtrl.text) ?? 0) > 0 &&
-                      (double.tryParse(amountCtrl.text) ?? 0) > 0)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 6),
-                      child: Text(
-                        '\$${(double.tryParse(amountCtrl.text) ?? 0).toStringAsFixed(2)} + Tax \$${((double.tryParse(amountCtrl.text) ?? 0) * (double.tryParse(taxRateCtrl.text) ?? 0) / 100).toStringAsFixed(2)} = \$${((double.tryParse(amountCtrl.text) ?? 0) * (1 + (double.tryParse(taxRateCtrl.text) ?? 0) / 100)).toStringAsFixed(2)}',
-                        style: const TextStyle(
-                            fontSize: 13,
-                            color: Color(0xFF000080),
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
                 ],
               ),
             ),
@@ -282,9 +273,8 @@ class _ClientBillingDetailScreenState
                     ..amount = amount
                     ..description = descriptionCtrl.text.trim()
                     ..paidDate = paidDate
-                    ..taxApplicable = (double.tryParse(taxRateCtrl.text) ?? 0) > 0
-                    ..taxRate = double.tryParse(taxRateCtrl.text) ?? 0.0
                     ..modeOfPayment = modeOfPayment
+                    ..isRetainer = isRetainer
                     ..save();
                 } else {
                   paymentsBox.add(Payment(
@@ -293,9 +283,8 @@ class _ClientBillingDetailScreenState
                     description: descriptionCtrl.text.trim(),
                     paidDate: paidDate,
                     dueDate: paidDate,
-                    taxApplicable: (double.tryParse(taxRateCtrl.text) ?? 0) > 0,
-                    taxRate: double.tryParse(taxRateCtrl.text) ?? 0.0,
                     modeOfPayment: modeOfPayment,
+                    isRetainer: isRetainer,
                   ));
                 }
                 Navigator.pop(context);
@@ -311,6 +300,7 @@ class _ClientBillingDetailScreenState
       ),
     );
   }
+
 
   Future<void> _exportToCSV() async {
     final payments = paymentsBox.values
@@ -377,10 +367,14 @@ class _ClientBillingDetailScreenState
               ),
             ],
           ),
-          body: Column(
+          body: SafeArea(
+            child: Column(
             children: [
               Container(
                 width: double.infinity,
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.42,
+                ),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [Colors.teal.shade50, Colors.blue.shade50],
@@ -389,7 +383,8 @@ class _ClientBillingDetailScreenState
                   ),
                 ),
                 padding: const EdgeInsets.all(16),
-                child: Column(
+                child: SingleChildScrollView(
+                  child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Invoice header
@@ -444,6 +439,7 @@ class _ClientBillingDetailScreenState
                         bold: true, fontSize: 18),
                   ],
                 ),
+                ),
               ),
               Expanded(
                 child: payments.isEmpty
@@ -452,10 +448,23 @@ class _ClientBillingDetailScreenState
                             "No payments recorded\nTap + to add a payment",
                             textAlign: TextAlign.center),
                       )
-                    : ListView.builder(
+                    : Builder(builder: (context) {
+                        final chronological = payments.reversed.toList();
+                        final paymentNumber = <dynamic, int>{};
+                        final runningBalance = <dynamic, double>{};
+                        double running = 0.0;
+                        for (var idx = 0; idx < chronological.length; idx++) {
+                          running += chronological[idx].totalAmount;
+                          paymentNumber[chronological[idx].key] = idx + 1;
+                          runningBalance[chronological[idx].key] =
+                              totalInvoicedWithTax - running;
+                        }
+                        return ListView.builder(
                         itemCount: payments.length,
                         itemBuilder: (_, i) {
                           final p = payments[i];
+                          final pNumber = paymentNumber[p.key] ?? (i + 1);
+                          final pBalance = runningBalance[p.key] ?? 0.0;
                           return Dismissible(
                             key: Key(p.key.toString()),
                             direction: DismissDirection.endToStart,
@@ -515,19 +524,54 @@ class _ClientBillingDetailScreenState
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            p.description.isEmpty ? 'Payment' : p.description,
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 14),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                'Payment $pNumber',
+                                                style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14),
+                                              ),
+                                              if (p.isRetainer) ...[
+                                                const SizedBox(width: 6),
+                                                Container(
+                                                  padding: const EdgeInsets.symmetric(
+                                                      horizontal: 6, vertical: 1),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.indigo.shade50,
+                                                    borderRadius: BorderRadius.circular(4),
+                                                    border: Border.all(color: Colors.indigo.shade200),
+                                                  ),
+                                                  child: Text('Retainer',
+                                                      style: TextStyle(
+                                                          fontSize: 10,
+                                                          color: Colors.indigo.shade700,
+                                                          fontWeight: FontWeight.w600)),
+                                                ),
+                                              ],
+                                            ],
                                           ),
+                                          if (p.description.isNotEmpty) ...[
+                                            const SizedBox(height: 2),
+                                            Text(p.description,
+                                                style: const TextStyle(
+                                                    fontSize: 12, color: Colors.black87)),
+                                          ],
                                           const SizedBox(height: 4),
                                           Text(
-                                            p.taxApplicable
-                                                ? '\$${p.amount.toStringAsFixed(2)} + Tax \$${p.taxAmount.toStringAsFixed(2)} = \$${p.totalAmount.toStringAsFixed(2)}'
-                                                : '\$${p.totalAmount.toStringAsFixed(2)}',
+                                            '\$${p.totalAmount.toStringAsFixed(2)} received',
                                             style: const TextStyle(
                                                 color: Color(0xFF000080),
+                                                fontWeight: FontWeight.w600),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            'Balance remaining: \$${pBalance.toStringAsFixed(2)}',
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color: pBalance > 0
+                                                    ? Colors.red.shade600
+                                                    : Colors.green.shade700,
                                                 fontWeight: FontWeight.w600),
                                           ),
                                           const SizedBox(height: 2),
@@ -566,9 +610,11 @@ class _ClientBillingDetailScreenState
                             ),
                           );
                         },
-                      ),
+                      );
+                      }),
               ),
             ],
+          ),
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () => _addOrEditPayment(),

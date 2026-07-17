@@ -26,6 +26,8 @@ class Payment extends HiveObject {
 
   @HiveField(7)
   String modeOfPayment; // 'cash', 'bank_transfer', 'card', 'cheque', 'other'
+  @HiveField(8)
+  bool isRetainer;
 
   Payment({
     required this.clientKey,
@@ -36,6 +38,7 @@ class Payment extends HiveObject {
     this.taxApplicable = false,
     this.taxRate = 0.0,
     this.modeOfPayment = 'bank_transfer',
+    this.isRetainer = false,
   });
 
   /// Tax amount

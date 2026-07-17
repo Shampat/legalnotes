@@ -28,12 +28,14 @@ class _AddEditClientScreenState extends State<AddEditClientScreen> {
   bool nonEngagementLetterSent = false;
 
   bool firstNameError = false;
+  bool dobError = false;
   bool lastNameError = false;
   bool phoneError = false;
   bool matterError = false;
 
   final ScrollController _scrollController = ScrollController();
   final GlobalKey firstNameKey = GlobalKey();
+  final GlobalKey dobKey = GlobalKey();
   final GlobalKey lastNameKey = GlobalKey();
   final GlobalKey phoneKey = GlobalKey();
   final GlobalKey matterKey = GlobalKey();
@@ -79,6 +81,7 @@ class _AddEditClientScreenState extends State<AddEditClientScreen> {
       lastNameError = lastNameCtrl.text.trim().isEmpty;
       phoneError = phoneCtrl.text.trim().isEmpty;
       matterError = matterCtrl.text.trim().isEmpty;
+      dobError = dobCtrl.text.trim().isEmpty;
     });
 
     GlobalKey? firstErrorKey;
@@ -90,6 +93,8 @@ class _AddEditClientScreenState extends State<AddEditClientScreen> {
       firstErrorKey = phoneKey;
     } else if (matterError) {
       firstErrorKey = matterKey;
+    } else if (dobError) {
+      firstErrorKey = dobKey;
     }
 
     if (firstErrorKey != null) {
@@ -357,10 +362,87 @@ class _AddEditClientScreenState extends State<AddEditClientScreen> {
                 maxLines: 2,
               ),
               const SizedBox(height: 10),
-              _customField(
-                controller: dobCtrl,
-                label: 'Date of Birth',
-                hint: 'YYYY-MM-DD',
+              InkWell(
+                key: dobKey,
+                onTap: () async {
+                  DateTime initial;
+                  try {
+                    initial = dobCtrl.text.trim().isNotEmpty
+                        ? DateFormat('yyyy-MM-dd').parseStrict(dobCtrl.text.trim())
+                        : DateTime(1990, 1, 1);
+                  } catch (_) {
+                    initial = DateTime(1990, 1, 1);
+                  }
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: initial,
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime.now(),
+                  );
+                  if (picked != null) {
+                    setState(() {
+                      dobCtrl.text = DateFormat('yyyy-MM-dd').format(picked);
+                      dobError = false;
+                    });
+                  }
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: dobError ? Colors.red.shade50 : Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: dobError ? Colors.red.shade400 : Colors.grey.shade300,
+                      width: dobError ? 1.5 : 1,
+                    ),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            'Date of Birth',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: dobError ? Colors.red.shade700 : const Color(0xFF000080),
+                            ),
+                          ),
+                          Text(' *',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.red.shade700)),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(Icons.calendar_today,
+                              size: 16,
+                              color: dobError ? Colors.red.shade400 : const Color(0xFF000080)),
+                          const SizedBox(width: 8),
+                          Text(
+                            dobCtrl.text.trim().isEmpty ? 'Tap to select' : dobCtrl.text.trim(),
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: dobCtrl.text.trim().isEmpty
+                                  ? Colors.grey.shade500
+                                  : Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (dobError)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text('Required',
+                              style: TextStyle(fontSize: 11, color: Colors.red.shade700)),
+                        ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),

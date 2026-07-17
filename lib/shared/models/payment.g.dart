@@ -25,13 +25,14 @@ class PaymentAdapter extends TypeAdapter<Payment> {
       taxApplicable: fields[5] as bool,
       taxRate: fields[6] as double,
       modeOfPayment: fields[7] as String,
+      isRetainer: fields[8] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, Payment obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.clientKey)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class PaymentAdapter extends TypeAdapter<Payment> {
       ..writeByte(6)
       ..write(obj.taxRate)
       ..writeByte(7)
-      ..write(obj.modeOfPayment);
+      ..write(obj.modeOfPayment)
+      ..writeByte(8)
+      ..write(obj.isRetainer);
   }
 
   @override

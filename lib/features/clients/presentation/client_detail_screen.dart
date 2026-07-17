@@ -339,7 +339,7 @@ ${HiveService.settingsBox.get('officeName', defaultValue: 'Our Law Office')}
                 context: context,
                 builder: (_) => AlertDialog(
                   title: const Text('Delete Client?'),
-                  content: Text('Delete "\${widget.client.fullName}"?\nThis cannot be undone.'),
+                  content: Text('Delete "${widget.client.fullName}"?\nThis cannot be undone.'),
                   actions: [
                     TextButton(
                         onPressed: () => Navigator.pop(context, false),
