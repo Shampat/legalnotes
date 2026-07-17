@@ -17,17 +17,24 @@ class ReportsScreen extends StatelessWidget {
     final hearings = HiveService.hearingsBox.values.toList();
     final payments = HiveService.paymentsBox.values.toList();
 
-    // Billing totals
-    double totalInvoiced = 0;
+    // Billing totals (tax-inclusive throughout for consistency)
+    double totalInvoicedWithTax = 0;
     double totalPaid = 0;
     double totalTaxCollected = 0;
     for (final c in clients) {
-      totalInvoiced += c.totalInvoiced;
       final clientPayments = payments.where((p) => p.clientKey == c.key).toList();
-      totalPaid += clientPayments.fold(0.0, (sum, p) => sum + p.totalAmount);
-      totalTaxCollected += clientPayments.fold(0.0, (sum, p) => sum + p.taxAmount);
+      final paid = clientPayments.fold(0.0, (sum, p) => sum + p.totalAmount);
+      final clientInvoiceTaxAmount = c.totalInvoiced * (c.invoiceTaxRate / 100);
+      final clientInvoicedWithTax = c.totalInvoiced + clientInvoiceTaxAmount;
+      final clientTaxCollected = clientInvoicedWithTax > 0
+          ? (clientInvoiceTaxAmount * (paid / clientInvoicedWithTax))
+              .clamp(0.0, clientInvoiceTaxAmount)
+          : 0.0;
+      totalInvoicedWithTax += clientInvoicedWithTax;
+      totalPaid += paid;
+      totalTaxCollected += clientTaxCollected;
     }
-    final totalOutstanding = totalInvoiced - totalPaid;
+    final totalOutstanding = totalInvoicedWithTax - totalPaid;
 
     // Hearing stats
     final upcomingHearings =
@@ -75,7 +82,7 @@ class ReportsScreen extends StatelessWidget {
 
       buf.writeln('--- BILLING SUMMARY ---');
       buf.writeln(
-          'Total Invoiced: \$${totalInvoiced.toStringAsFixed(2)}');
+          'Total Invoiced (incl. tax): \$${totalInvoicedWithTax.toStringAsFixed(2)}');
       buf.writeln('Total Collected: \$${totalPaid.toStringAsFixed(2)}');
       buf.writeln(
           'Outstanding: \$${totalOutstanding.toStringAsFixed(2)}\n');
@@ -149,8 +156,8 @@ class ReportsScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
-                    _billingRow('Total Invoiced',
-                        '\$${totalInvoiced.toStringAsFixed(2)}',
+                    _billingRow('Total Invoiced (incl. tax)',
+                        '\$${totalInvoicedWithTax.toStringAsFixed(2)}',
                         Colors.indigo),
                     const Divider(),
                     _billingRow('Total Collected',

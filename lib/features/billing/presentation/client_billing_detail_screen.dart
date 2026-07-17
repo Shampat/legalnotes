@@ -140,7 +140,18 @@ class _ClientBillingDetailScreenState
     DateTime paidDate =
         isEdit ? (payment.paidDate ?? DateTime.now()) : DateTime.now();
     String modeOfPayment = isEdit ? payment.modeOfPayment : 'bank_transfer';
-    bool isRetainer = isEdit ? payment.isRetainer : false;
+    final existingRetainerPayments = paymentsBox.values.where((p) =>
+        p.clientKey == widget.clientKey &&
+        p.isRetainer &&
+        (!isEdit || p.key != payment.key));
+    final existingRetainer =
+        existingRetainerPayments.isNotEmpty ? existingRetainerPayments.first : null;
+    final isFirstPaymentForClient = paymentsBox.values
+        .where((p) => p.clientKey == widget.clientKey)
+        .isEmpty;
+    bool isRetainer = isEdit
+        ? payment.isRetainer
+        : (existingRetainer == null && isFirstPaymentForClient);
 
     await showDialog(
       context: context,
@@ -162,6 +173,25 @@ class _ClientBillingDetailScreenState
                     ),
                     onChanged: (_) => setDialogState(() {}),
                   ),
+                  if (client.invoiceTaxRate > 0 &&
+                      (double.tryParse(amountCtrl.text) ?? 0) > 0)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 6),
+                      child: Builder(builder: (context) {
+                        final amt = double.tryParse(amountCtrl.text) ?? 0.0;
+                        final rate = client.invoiceTaxRate;
+                        final taxPortion = amt * rate / (100 + rate);
+                        final principalPortion = amt - taxPortion;
+                        return Text(
+                          'Includes ~\$${taxPortion.toStringAsFixed(2)} tax (${rate.toStringAsFixed(0)}%) '
+                          '\u00b7 \$${principalPortion.toStringAsFixed(2)} toward invoice',
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.orange.shade800,
+                              fontStyle: FontStyle.italic),
+                        );
+                      }),
+                    ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: descriptionCtrl,
@@ -232,12 +262,20 @@ class _ClientBillingDetailScreenState
                   CheckboxListTile(
                     title: const Text("Mark as Retainer / Deposit",
                         style: TextStyle(fontSize: 13)),
-                    subtitle: const Text(
-                        "First payment received to begin work",
-                        style: TextStyle(fontSize: 11, color: Colors.grey)),
+                    subtitle: Text(
+                        existingRetainer != null
+                            ? "Retainer already recorded on ${existingRetainer.paidDate?.toLocal().toString().split(' ')[0] ?? 'an earlier date'}"
+                            : "First payment received to begin work",
+                        style: TextStyle(
+                            fontSize: 11,
+                            color: existingRetainer != null
+                                ? Colors.red.shade400
+                                : Colors.grey)),
                     value: isRetainer,
-                    onChanged: (val) =>
-                        setDialogState(() => isRetainer = val ?? false),
+                    onChanged: existingRetainer != null
+                        ? null
+                        : (val) =>
+                            setDialogState(() => isRetainer = val ?? false),
                     controlAffinity: ListTileControlAffinity.leading,
                     contentPadding: EdgeInsets.zero,
                     dense: true,
@@ -344,6 +382,10 @@ class _ClientBillingDetailScreenState
             client.totalInvoiced * (client.invoiceTaxRate / 100);
         final totalInvoicedWithTax = client.totalInvoiced + invoiceTaxAmount;
         final balanceDue = totalInvoicedWithTax - totalPaid;
+        final taxCollectedSoFar = totalInvoicedWithTax > 0
+            ? (invoiceTaxAmount * (totalPaid / totalInvoicedWithTax))
+                .clamp(0.0, invoiceTaxAmount)
+            : 0.0;
 
         return Scaffold(
           appBar: AppBar(
@@ -426,7 +468,7 @@ class _ClientBillingDetailScreenState
                         Colors.black54),
                     const SizedBox(height: 4),
                     _summaryRow('Tax Collected',
-                        '\$${payments.fold(0.0, (s, p) => s + p.taxAmount).toStringAsFixed(2)}',
+                        '\$${taxCollectedSoFar.toStringAsFixed(2)}',
                         Colors.orange.shade700),
                     const SizedBox(height: 4),
                     _summaryRow('Total Received (inc. tax)',

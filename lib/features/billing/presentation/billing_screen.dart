@@ -44,17 +44,27 @@ class _BillingScreenState extends State<BillingScreen> {
                   c.name.toLowerCase().contains(query) ||
                   c.phone.toLowerCase().contains(query)).toList();
 
-          // Summary totals
-          double totalInvoiced = 0;
+          // Summary totals (tax-inclusive throughout for consistency)
+          double totalInvoicedWithTax = 0;
           double totalPaid = 0;
+          double totalTaxCollected = 0;
           for (final c in allClients) {
-            final paid = paymentsBox.values
+            final clientPayments = paymentsBox.values
                 .where((p) => p.clientKey == c.key)
-                .fold(0.0, (sum, p) => sum + p.amount);
-            totalInvoiced += c.totalInvoiced;
+                .toList();
+            final paid = clientPayments.fold(0.0, (sum, p) => sum + p.totalAmount);
+            final clientInvoiceTaxAmount =
+                c.totalInvoiced * (c.invoiceTaxRate / 100);
+            final clientInvoicedWithTax = c.totalInvoiced + clientInvoiceTaxAmount;
+            final clientTaxCollected = clientInvoicedWithTax > 0
+                ? (clientInvoiceTaxAmount * (paid / clientInvoicedWithTax))
+                    .clamp(0.0, clientInvoiceTaxAmount)
+                : 0.0;
+            totalInvoicedWithTax += clientInvoicedWithTax;
             totalPaid += paid;
+            totalTaxCollected += clientTaxCollected;
           }
-          final totalOutstanding = totalInvoiced - totalPaid;
+          final totalOutstanding = totalInvoicedWithTax - totalPaid;
 
           return Scaffold(
             appBar: AppBar(
@@ -79,16 +89,21 @@ class _BillingScreenState extends State<BillingScreen> {
                 Container(
                   width: double.infinity,
                   color: Colors.indigo.shade50,
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 12, horizontal: 16),
-                  child: Row(
-                    children: [
-                      Expanded(child: _summaryTile("Invoiced", '\$${totalInvoiced.toStringAsFixed(2)}', Colors.indigo)),
-                      _vDivider(),
-                      Expanded(child: _summaryTile("Collected", '\$${totalPaid.toStringAsFixed(2)}', Colors.green)),
-                      _vDivider(),
-                      Expanded(child: _summaryTile("Outstanding", '\$${totalOutstanding.toStringAsFixed(2)}', totalOutstanding > 0 ? Colors.red : Colors.green)),
-                    ],
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        SizedBox(width: 105, child: _summaryTile("Invoiced", '\$${totalInvoicedWithTax.toStringAsFixed(2)}', Colors.indigo, info: "Total invoiced to clients, including applicable tax.")),
+                        _vDivider(),
+                        SizedBox(width: 105, child: _summaryTile("Collected", '\$${totalPaid.toStringAsFixed(2)}', Colors.green, info: "Total money actually received from clients so far, including tax.")),
+                        _vDivider(),
+                        SizedBox(width: 90, child: _summaryTile("Tax Collected", '\$${totalTaxCollected.toStringAsFixed(2)}', Colors.orange)),
+                        _vDivider(),
+                        SizedBox(width: 105, child: _summaryTile("Outstanding", '\$${totalOutstanding.toStringAsFixed(2)}', totalOutstanding > 0 ? Colors.red : Colors.green, info: "Balance still owed by clients, including tax.")),
+                      ],
+                    ),
                   ),
                 ),
 
@@ -230,12 +245,28 @@ class _BillingScreenState extends State<BillingScreen> {
     );
   }
 
-  Widget _summaryTile(String label, String value, Color color) {
+  Widget _summaryTile(String label, String value, Color color, {String? info}) {
     return Column(
       children: [
-        Text(label,
-            style: const TextStyle(fontSize: 10, color: Colors.grey),
-            overflow: TextOverflow.ellipsis),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(label,
+                style: const TextStyle(fontSize: 10, color: Colors.grey),
+                overflow: TextOverflow.ellipsis),
+            if (info != null) ...[
+              const SizedBox(width: 2),
+              Tooltip(
+                message: info,
+                triggerMode: TooltipTriggerMode.tap,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
+                  child: Icon(Icons.info_outline, size: 11, color: Colors.grey.shade500),
+                ),
+              ),
+            ],
+          ],
+        ),
         const SizedBox(height: 2),
         Text(value,
             style: TextStyle(
