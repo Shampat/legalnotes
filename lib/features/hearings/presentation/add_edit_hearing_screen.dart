@@ -163,6 +163,14 @@ class _AddEditHearingScreenState extends State<AddEditHearingScreen> {
   Widget build(BuildContext context) {
     final clients = HiveService.clientsBox.values.toList();
     final isEdit = widget.hearing != null;
+    final validClientKeys = clients.map((c) => c.key as int).toSet();
+    final isOrphaned = selectedClientKey != null &&
+        !validClientKeys.contains(selectedClientKey);
+    if (isOrphaned) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => selectedClientKey = null);
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -196,8 +204,30 @@ class _AddEditHearingScreenState extends State<AddEditHearingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              if (isOrphaned)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.red.shade200),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.warning_amber, color: Colors.red.shade700, size: 18),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'The original client for this hearing was deleted. Please select a client below, or delete this hearing.',
+                          style: TextStyle(fontSize: 12, color: Colors.red.shade900),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               DropdownButtonFormField<int>(
-                initialValue: selectedClientKey,
+                initialValue: isOrphaned ? null : selectedClientKey,
                 hint: const Text('Select Client'),
                 items: clients.map((Client c) {
                   return DropdownMenuItem<int>(

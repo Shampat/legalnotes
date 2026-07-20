@@ -17,6 +17,7 @@ class HiveService {
     await Hive.initFlutter();
     Hive.registerAdapter(ClientAdapter());
     Hive.registerAdapter(HearingAdapter());
+    Hive.registerAdapter(OpposingPartyAdapter());
     Hive.registerAdapter(PaymentAdapter());
     Hive.registerAdapter(DocumentAdapter());
     Hive.registerAdapter(CommunicationLogAdapter());

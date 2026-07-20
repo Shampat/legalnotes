@@ -16,13 +16,20 @@ class BackupUtils {
     try {
       final clients = HiveService.clientsBox.values.map((c) => {
             'key': c.key,
-            'name': c.fullName,
             'firstName': c.firstName,
             'lastName': c.lastName,
             'phone': c.phone,
             'email': c.email,
             'address': c.address,
             'totalInvoiced': c.totalInvoiced,
+            'invoiceTaxRate': c.invoiceTaxRate,
+            'clientStatus': c.clientStatus,
+            'matterDescription': c.matterDescription,
+            'consultationDate': c.consultationDate?.toIso8601String(),
+            'retainerSigned': c.retainerSigned,
+            'nonEngagementLetterSent': c.nonEngagementLetterSent,
+            'dateOfBirth': c.dateOfBirth,
+            'companyName': c.companyName,
             'createdAt': c.createdAt.toIso8601String(),
           }).toList();
 
@@ -34,6 +41,9 @@ class BackupUtils {
             'court': h.court,
             'notes': h.notes,
             'opposingParty': h.opposingParty,
+            'opposingPartiesList': h.opposingPartiesList
+                ?.map((op) => {'name': op.name, 'phone': op.phone})
+                .toList(),
           }).toList();
 
       final payments = HiveService.paymentsBox.values.map((p) => {
@@ -43,6 +53,10 @@ class BackupUtils {
             'description': p.description,
             'dueDate': p.dueDate.toIso8601String(),
             'paidDate': p.paidDate?.toIso8601String(),
+            'taxApplicable': p.taxApplicable,
+            'taxRate': p.taxRate,
+            'modeOfPayment': p.modeOfPayment,
+            'isRetainer': p.isRetainer,
           }).toList();
 
       final documents = HiveService.documentsBox.values.map((d) => {
@@ -67,10 +81,11 @@ class BackupUtils {
       final settings = {
         'officeName': HiveService.settingsBox
             .get('officeName', defaultValue: 'Jolly Law Office'),
+        'taxRate': HiveService.settingsBox.get('taxRate', defaultValue: 0.0),
       };
 
       final backup = {
-        'version': 1,
+        'version': 2,
         'exportedAt': DateTime.now().toIso8601String(),
         'clients': clients,
         'hearings': hearings,
@@ -121,20 +136,41 @@ class BackupUtils {
         final settings = backup['settings'] as Map<String, dynamic>;
         await HiveService.settingsBox.put(
             'officeName', settings['officeName'] ?? 'Jolly Law Office');
+        await HiveService.settingsBox
+            .put('taxRate', (settings['taxRate'] as num?)?.toDouble() ?? 0.0);
       }
 
       // Restore clients
       await HiveService.clientsBox.clear();
       for (final c in (backup['clients'] as List)) {
-        final parts = (c['name'] as String? ?? '').split(' ');
+        String firstName = c['firstName'] as String? ?? '';
+        String lastName = c['lastName'] as String? ?? '';
+        if (firstName.isEmpty && lastName.isEmpty && c['name'] != null) {
+          final parts = (c['name'] as String).split(' ');
+          firstName = parts.first;
+          lastName = parts.length > 1 ? parts.sublist(1).join(' ') : '';
+        }
         final client = Client(
-          firstName: c['firstName'] as String? ?? parts.first,
-          lastName: c['lastName'] as String? ?? (parts.length > 1 ? parts.last : ''),
-          phone: c['phone'],
+          firstName: firstName,
+          lastName: lastName,
+          phone: c['phone'] ?? '',
           email: c['email'] ?? '',
           address: c['address'] ?? '',
-          totalInvoiced: (c['totalInvoiced'] as num).toDouble(),
-          createdAt: DateTime.parse(c['createdAt']),
+          totalInvoiced: (c['totalInvoiced'] as num?)?.toDouble() ?? 0.0,
+          invoiceTaxRate: (c['invoiceTaxRate'] as num?)?.toDouble() ?? 0.0,
+          clientStatus: c['clientStatus'] as String? ?? 'prospective',
+          matterDescription: c['matterDescription'] as String? ?? '',
+          consultationDate: c['consultationDate'] != null
+              ? DateTime.parse(c['consultationDate'])
+              : null,
+          retainerSigned: c['retainerSigned'] as bool? ?? false,
+          nonEngagementLetterSent:
+              c['nonEngagementLetterSent'] as bool? ?? false,
+          dateOfBirth: c['dateOfBirth'] as String?,
+          companyName: c['companyName'] as String?,
+          createdAt: c['createdAt'] != null
+              ? DateTime.parse(c['createdAt'])
+              : DateTime.now(),
         );
         await HiveService.clientsBox.put(c['key'], client);
       }
@@ -142,6 +178,15 @@ class BackupUtils {
       // Restore hearings
       await HiveService.hearingsBox.clear();
       for (final h in (backup['hearings'] as List)) {
+        List<OpposingParty>? opposingPartiesList;
+        if (h['opposingPartiesList'] != null) {
+          opposingPartiesList = (h['opposingPartiesList'] as List)
+              .map((op) => OpposingParty(
+                    name: op['name'] as String,
+                    phone: op['phone'] as String?,
+                  ))
+              .toList();
+        }
         final hearing = Hearing(
           caseTitle: h['caseTitle'],
           clientKey: h['clientKey'],
@@ -149,6 +194,7 @@ class BackupUtils {
           court: h['court'] ?? '',
           notes: h['notes'] ?? '',
           opposingParty: h['opposingParty'] ?? '',
+          opposingPartiesList: opposingPartiesList,
         );
         await HiveService.hearingsBox.put(h['key'], hearing);
       }
@@ -164,6 +210,10 @@ class BackupUtils {
           paidDate: p['paidDate'] != null
               ? DateTime.parse(p['paidDate'])
               : null,
+          taxApplicable: p['taxApplicable'] as bool? ?? false,
+          taxRate: (p['taxRate'] as num?)?.toDouble() ?? 0.0,
+          modeOfPayment: p['modeOfPayment'] as String? ?? 'bank_transfer',
+          isRetainer: p['isRetainer'] as bool? ?? false,
         );
         await HiveService.paymentsBox.put(p['key'], payment);
       }

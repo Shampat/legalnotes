@@ -15,9 +15,17 @@ class ClientDetailScreen extends StatefulWidget {
 }
 
 class _ClientDetailScreenState extends State<ClientDetailScreen> {
+  late final int _clientKey;
+
+  @override
+  void initState() {
+    super.initState();
+    _clientKey = widget.client.key as int;
+  }
+
   List<CommunicationLog> _logs() {
     return HiveService.communicationLogsBox.values
-        .where((l) => l.clientKey == widget.client.key as int)
+        .where((l) => l.clientKey == _clientKey)
         .toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
@@ -109,7 +117,7 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
 
     HiveService.communicationLogsBox.add(
       CommunicationLog(
-        clientKey: widget.client.key as int,
+        clientKey: _clientKey,
         note: note,
         channel: channel,
         status: status,
@@ -211,7 +219,7 @@ ${HiveService.settingsBox.get('officeName', defaultValue: 'Our Law Office')}
                 if (ctrl.text.trim().isNotEmpty) {
                   HiveService.communicationLogsBox.add(
                     CommunicationLog(
-                      clientKey: widget.client.key as int,
+                      clientKey: _clientKey,
                       note: ctrl.text.trim(),
                       channel: selectedChannel,
                       status: 'connected',
@@ -642,34 +650,40 @@ ${HiveService.settingsBox.get('officeName', defaultValue: 'Our Law Office')}
                             ),
                             subtitle: Row(
                               children: [
-                                Text(
-                                  DateFormat(
-                                          'dd MMM yyyy • hh:mm a')
-                                      .format(log.createdAt),
-                                  style: const TextStyle(
-                                      fontSize: 11,
-                                      color: Colors.grey),
+                                Flexible(
+                                  child: Text(
+                                    DateFormat(
+                                            'dd MMM yyyy • hh:mm a')
+                                        .format(log.createdAt),
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.grey),
+                                  ),
                                 ),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: 6),
                                 if (log.status != 'connected')
-                                  Container(
-                                    padding:
-                                        const EdgeInsets.symmetric(
-                                            horizontal: 6,
-                                            vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: statusColor
-                                          .withValues(alpha: 0.1),
-                                      borderRadius:
-                                          BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      _statusLabel(log.status),
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          color: statusColor,
-                                          fontWeight:
-                                              FontWeight.bold),
+                                  Flexible(
+                                    child: Container(
+                                      padding:
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 6,
+                                              vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: statusColor
+                                            .withValues(alpha: 0.1),
+                                        borderRadius:
+                                            BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        _statusLabel(log.status),
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                            fontSize: 10,
+                                            color: statusColor,
+                                            fontWeight:
+                                                FontWeight.bold),
+                                      ),
                                     ),
                                   ),
                               ],

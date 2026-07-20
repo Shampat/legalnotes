@@ -6,6 +6,43 @@ part of 'hearing.dart';
 // TypeAdapterGenerator
 // **************************************************************************
 
+class OpposingPartyAdapter extends TypeAdapter<OpposingParty> {
+  @override
+  final int typeId = 5;
+
+  @override
+  OpposingParty read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return OpposingParty(
+      name: fields[0] as String,
+      phone: fields[1] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, OpposingParty obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(0)
+      ..write(obj.name)
+      ..writeByte(1)
+      ..write(obj.phone);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is OpposingPartyAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
 class HearingAdapter extends TypeAdapter<Hearing> {
   @override
   final int typeId = 1;
@@ -23,13 +60,14 @@ class HearingAdapter extends TypeAdapter<Hearing> {
       court: fields[3] as String,
       notes: fields[4] as String,
       opposingParty: fields[5] as String,
+      opposingPartiesList: (fields[6] as List?)?.cast<OpposingParty>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Hearing obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.caseTitle)
       ..writeByte(1)
@@ -41,7 +79,9 @@ class HearingAdapter extends TypeAdapter<Hearing> {
       ..writeByte(4)
       ..write(obj.notes)
       ..writeByte(5)
-      ..write(obj.opposingParty);
+      ..write(obj.opposingParty)
+      ..writeByte(6)
+      ..write(obj.opposingPartiesList);
   }
 
   @override
