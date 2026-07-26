@@ -12,11 +12,24 @@ class AddEditHearingScreen extends StatefulWidget {
   State<AddEditHearingScreen> createState() => _AddEditHearingScreenState();
 }
 
+class _OpposingPartyEntry {
+  final TextEditingController nameCtrl;
+  final TextEditingController phoneCtrl;
+  _OpposingPartyEntry({String name = '', String phone = ''})
+      : nameCtrl = TextEditingController(text: name),
+        phoneCtrl = TextEditingController(text: phone);
+
+  void dispose() {
+    nameCtrl.dispose();
+    phoneCtrl.dispose();
+  }
+}
+
 class _AddEditHearingScreenState extends State<AddEditHearingScreen> {
   late TextEditingController titleCtrl;
   late TextEditingController courtCtrl;
   late TextEditingController notesCtrl;
-  late TextEditingController opposingPartyCtrl;
+  late List<_OpposingPartyEntry> opposingParties;
   DateTime? date;
   int? selectedClientKey;
 
@@ -26,11 +39,28 @@ class _AddEditHearingScreenState extends State<AddEditHearingScreen> {
     titleCtrl = TextEditingController(text: widget.hearing?.caseTitle ?? '');
     courtCtrl = TextEditingController(text: widget.hearing?.court ?? '');
     notesCtrl = TextEditingController(text: widget.hearing?.notes ?? '');
-    opposingPartyCtrl =
-        TextEditingController(text: widget.hearing?.opposingParty ?? '');
+
+    final existing = widget.hearing?.opposingParties ?? [];
+    opposingParties = existing.isNotEmpty
+        ? existing
+            .map((op) => _OpposingPartyEntry(name: op.name, phone: op.phone ?? ''))
+            .toList()
+        : [_OpposingPartyEntry()];
+
     date = widget.hearing?.dateTime;
     selectedClientKey =
         widget.hearing?.clientKey == 0 ? null : widget.hearing?.clientKey;
+  }
+
+  @override
+  void dispose() {
+    titleCtrl.dispose();
+    courtCtrl.dispose();
+    notesCtrl.dispose();
+    for (final op in opposingParties) {
+      op.dispose();
+    }
+    super.dispose();
   }
 
   Future<void> _pickDateTime() async {
@@ -74,20 +104,45 @@ class _AddEditHearingScreenState extends State<AddEditHearingScreen> {
       return;
     }
 
-    final opposingParty = opposingPartyCtrl.text.trim();
+    final validEntries = opposingParties
+        .where((op) => op.nameCtrl.text.trim().isNotEmpty)
+        .toList();
 
-    // Only check conflict if opposing party is provided
-    if (opposingParty.isNotEmpty) {
-      final conflicts =
-          ConflictCheckService.checkOpposingPartyConflict(opposingParty);
-      if (conflicts.isNotEmpty) {
+    final opposingPartiesList = validEntries
+        .map((op) => OpposingParty(
+              name: op.nameCtrl.text.trim(),
+              phone: op.phoneCtrl.text.trim().isEmpty
+                  ? null
+                  : op.phoneCtrl.text.trim(),
+            ))
+        .toList();
+
+    final legacyOpposingParty =
+        validEntries.map((op) => op.nameCtrl.text.trim()).join(', ');
+
+    // Check conflict for each opposing party name entered
+    if (validEntries.isNotEmpty) {
+      final allMatches = <Client>[];
+      final seenKeys = <int>{};
+      for (final op in validEntries) {
+        final matches = ConflictCheckService.checkOpposingPartyConflict(
+            op.nameCtrl.text.trim());
+        for (final m in matches) {
+          final k = m.key as int;
+          if (!seenKeys.contains(k)) {
+            seenKeys.add(k);
+            allMatches.add(m);
+          }
+        }
+      }
+      if (allMatches.isNotEmpty) {
         final proceed = await showDialog<bool>(
           context: context,
           builder: (_) => AlertDialog(
             title: const Text('Conflict Warning'),
             content: Text(
-              'The opposing party matches an existing client:\n\n'
-              '${conflicts.map((c) => c.name).join('\n')}\n\n'
+              'An opposing party matches an existing client:\n\n'
+              '${allMatches.map((c) => c.name).join('\n')}\n\n'
               'Save anyway?',
             ),
             actions: [
@@ -112,7 +167,8 @@ class _AddEditHearingScreenState extends State<AddEditHearingScreen> {
         ..clientKey = selectedClientKey!
         ..court = courtCtrl.text.trim()
         ..notes = notesCtrl.text.trim()
-        ..opposingParty = opposingParty
+        ..opposingParty = legacyOpposingParty
+        ..opposingPartiesList = opposingPartiesList
         ..dateTime = date!
         ..save();
     } else {
@@ -123,7 +179,8 @@ class _AddEditHearingScreenState extends State<AddEditHearingScreen> {
           dateTime: date!,
           court: courtCtrl.text.trim(),
           notes: notesCtrl.text.trim(),
-          opposingParty: opposingParty,
+          opposingParty: legacyOpposingParty,
+          opposingPartiesList: opposingPartiesList,
         ),
       );
     }
@@ -157,6 +214,79 @@ class _AddEditHearingScreenState extends State<AddEditHearingScreen> {
       if (!mounted) return;
       Navigator.pop(context, true);
     }
+  }
+
+  Widget _buildOpposingPartyFields() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Opposing Parties (optional)',
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.grey),
+        ),
+        const SizedBox(height: 6),
+        ...opposingParties.asMap().entries.map((entry) {
+          final i = entry.key;
+          final op = entry.value;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: TextField(
+                    controller: op.nameCtrl,
+                    decoration: InputDecoration(
+                      labelText: 'Name',
+                      hintText: 'Opposing party ${i + 1}',
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      isDense: true,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  flex: 2,
+                  child: TextField(
+                    controller: op.phoneCtrl,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      labelText: 'Phone',
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      isDense: true,
+                    ),
+                  ),
+                ),
+                if (opposingParties.length > 1)
+                  IconButton(
+                    icon: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 20),
+                    onPressed: () {
+                      setState(() {
+                        op.dispose();
+                        opposingParties.removeAt(i);
+                      });
+                    },
+                  ),
+              ],
+            ),
+          );
+        }),
+        TextButton.icon(
+          onPressed: () {
+            setState(() {
+              opposingParties.add(_OpposingPartyEntry());
+            });
+          },
+          icon: const Icon(Icons.add, size: 18),
+          label: const Text('Add another'),
+        ),
+      ],
+    );
   }
 
   @override
@@ -198,127 +328,131 @@ class _AddEditHearingScreenState extends State<AddEditHearingScreen> {
             ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              if (isOrphaned)
-                Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.red.shade200),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.warning_amber, color: Colors.red.shade700, size: 18),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'The original client for this hearing was deleted. Please select a client below, or delete this hearing.',
-                          style: TextStyle(fontSize: 12, color: Colors.red.shade900),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 8),
+                if (isOrphaned)
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.red.shade200),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.warning_amber, color: Colors.red.shade700, size: 18),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'The original client for this hearing was deleted. Please select a client below, or delete this hearing.',
+                            style: TextStyle(fontSize: 12, color: Colors.red.shade900),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              DropdownButtonFormField<int>(
-                initialValue: isOrphaned ? null : selectedClientKey,
-                hint: const Text('Select Client'),
-                items: clients.map((Client c) {
-                  return DropdownMenuItem<int>(
-                    value: c.key as int,
-                    child: Text(c.name),
-                  );
-                }).toList(),
-                onChanged: (isEdit && !isOrphaned)
-                    ? null
-                    : (val) => setState(() => selectedClientKey = val),
-                decoration: InputDecoration(
-                  labelText: 'Client',
-                  filled: true,
-                  fillColor: (isEdit && !isOrphaned)
-                      ? Colors.grey.shade200
-                      : Colors.indigo.shade50,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  helperText: (isEdit && !isOrphaned)
-                      ? 'Client cannot be changed once a hearing is created'
-                      : null,
-                  helperStyle: const TextStyle(fontSize: 11, color: Colors.grey),
-                ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: titleCtrl,
-                decoration:
-                    const InputDecoration(labelText: 'Case Title'),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: courtCtrl,
-                decoration: const InputDecoration(labelText: 'Court'),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: opposingPartyCtrl,
-                decoration:
-                    const InputDecoration(labelText: 'Opposing Party (optional)'),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: notesCtrl,
-                decoration: const InputDecoration(labelText: 'Notes'),
-                maxLines: 3,
-              ),
-              const SizedBox(height: 12),
-              InkWell(
-                onTap: _pickDateTime,
-                child: InputDecorator(
+                DropdownButtonFormField<int>(
+                  initialValue: isOrphaned ? null : selectedClientKey,
+                  hint: const Text('Select Client'),
+                  isExpanded: true,
+                  items: clients.map((Client c) {
+                    return DropdownMenuItem<int>(
+                      value: c.key as int,
+                      child: Text(
+                        c.name,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (isEdit && !isOrphaned)
+                      ? null
+                      : (val) => setState(() => selectedClientKey = val),
                   decoration: InputDecoration(
-                    labelText: 'Date & Time',
+                    labelText: 'Client',
                     filled: true,
-                    fillColor: Colors.indigo.shade50,
+                    fillColor: (isEdit && !isOrphaned)
+                        ? Colors.grey.shade200
+                        : Colors.indigo.shade50,
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8)),
-                    suffixIcon: const Icon(Icons.calendar_today),
+                    helperText: (isEdit && !isOrphaned)
+                        ? 'Client cannot be changed once a hearing is created'
+                        : null,
+                    helperStyle: const TextStyle(fontSize: 11, color: Colors.grey),
                   ),
-                  child: Text(
-                    date != null
-                        ? date!.toLocal().toString().split('.')[0]
-                        : 'Tap to select a future date & time',
-                    style: TextStyle(
-                      fontSize: date != null ? 15 : 16,
-                      fontWeight: date != null
-                          ? FontWeight.normal
-                          : FontWeight.bold,
-                      color: date != null
-                          ? Colors.black87
-                          : Colors.red.shade700,
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: titleCtrl,
+                  decoration:
+                      const InputDecoration(labelText: 'Case Title'),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: courtCtrl,
+                  decoration: const InputDecoration(labelText: 'Court'),
+                ),
+                const SizedBox(height: 12),
+                _buildOpposingPartyFields(),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: notesCtrl,
+                  decoration: const InputDecoration(labelText: 'Notes'),
+                  maxLines: 3,
+                ),
+                const SizedBox(height: 12),
+                InkWell(
+                  onTap: _pickDateTime,
+                  child: InputDecorator(
+                    decoration: InputDecoration(
+                      labelText: 'Date & Time',
+                      filled: true,
+                      fillColor: Colors.indigo.shade50,
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      suffixIcon: const Icon(Icons.calendar_today),
+                    ),
+                    child: Text(
+                      date != null
+                          ? date!.toLocal().toString().split('.')[0]
+                          : 'Tap to select a future date & time',
+                      style: TextStyle(
+                        fontSize: date != null ? 15 : 16,
+                        fontWeight: date != null
+                            ? FontWeight.normal
+                            : FontWeight.bold,
+                        color: date != null
+                            ? Colors.black87
+                            : Colors.red.shade700,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: _save,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF000080),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: _save,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF000080),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                  ),
+                  child: Text(
+                    isEdit ? 'Update Hearing' : 'Add Hearing',
+                    style: const TextStyle(
+                        color: Colors.white, fontSize: 16),
+                  ),
                 ),
-                child: Text(
-                  isEdit ? 'Update Hearing' : 'Add Hearing',
-                  style: const TextStyle(
-                      color: Colors.white, fontSize: 16),
-                ),
-              ),
-            ],
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       ),
