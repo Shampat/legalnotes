@@ -15,8 +15,8 @@ val keystoreProperties = Properties().apply {
 
 android {
     namespace = "com.vasapps.legalnotes"
-    compileSdk = 36                 // updated for plugins
-    ndkVersion = "27.0.12077973"   // updated for plugins
+    compileSdk = 36
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -31,8 +31,10 @@ android {
         applicationId = "com.vasapps.legalnotes"
         minSdk = flutter.minSdkVersion
         targetSdk = 36
-        versionCode = 2
-        versionName = "1.0.1+2"
+
+        // Use version from pubspec.yaml
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
     }
 
     signingConfigs {
@@ -56,4 +58,3 @@ android {
 flutter {
     source = "../.."
 }
-

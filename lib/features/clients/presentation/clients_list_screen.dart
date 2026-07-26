@@ -5,6 +5,7 @@ import '../../../core/services/database/hive_service.dart';
 import '../../../shared/models/client.dart';
 import 'client_detail_screen.dart';
 import 'add_edit_client_screen.dart';
+import 'import_clients_screen.dart';
 
 class ClientsListScreen extends StatefulWidget {
   const ClientsListScreen({super.key});
@@ -123,11 +124,23 @@ class _ClientsListScreenState extends State<ClientsListScreen> {
                 setState(() => _showSearch = false);
               },
             )
-          else
+          else ...[
+            IconButton(
+              icon: const Icon(Icons.upload_file, color: Colors.white),
+              tooltip: 'Import Clients',
+              onPressed: () async {
+                final imported = await Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ImportClientsScreen()),
+                );
+                if (imported == true) setState(() {});
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.search, color: Colors.white),
               onPressed: () => setState(() => _showSearch = true),
             ),
+          ],
         ],
       ),
       body: clients.isEmpty
@@ -252,12 +265,15 @@ class _ClientsListScreenState extends State<ClientsListScreen> {
                     isThreeLine: true,
                     trailing: const Icon(Icons.chevron_right,
                         color: Color(0xFF000080)),
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) =>
-                              ClientDetailScreen(client: client)),
-                    ),
+                    onTap: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) =>
+                                ClientDetailScreen(client: client)),
+                      );
+                      if (mounted) setState(() {});
+                    },
                   ),
                 );
               },

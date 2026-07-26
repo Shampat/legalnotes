@@ -138,8 +138,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
         return ValueListenableBuilder(
           valueListenable: HiveService.hearingsBox.listenable(),
           builder: (_, Box<Hearing> hearingBox, ___) {
-            final hearings = hearingBox.values.toList()
+            final futureHearings = hearingBox.values
+                .where((h) => !h.dateTime.isBefore(now))
+                .toList()
               ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
+            final overdueHearings = hearingBox.values
+                .where((h) => h.dateTime.isBefore(now))
+                .toList()
+              ..sort((a, b) => b.dateTime.compareTo(a.dateTime));
+            const maxOverdueShown = 10;
+            final cappedOverdue = overdueHearings.take(maxOverdueShown).toList();
+            final hearings = [...futureHearings, ...cappedOverdue];
+            final futureCount = futureHearings.length;
 
             final soonCount = hearings
                 .where((h) =>
@@ -430,7 +440,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             _playAlert();
                           }
 
-                          return Card(
+                          final card = Card(
                             shape: RoundedRectangleBorder(
                               side: const BorderSide(
                                   color: Color(0xFF000080),
@@ -444,14 +454,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               contentPadding:
                                   const EdgeInsets.symmetric(
                                       horizontal: 12, vertical: 8),
-                              title: Text(h.caseTitle,
+                              title: Text(h.getClientName(),
                                   style: const TextStyle(
                                       fontWeight: FontWeight.bold)),
                               subtitle: Column(
                                 crossAxisAlignment:
                                     CrossAxisAlignment.start,
                                 children: [
-                                  Text(h.getClientName(),
+                                  Text(h.caseTitle,
                                       style: const TextStyle(
                                           color: Color(0xFF000080),
                                           fontWeight:
@@ -496,6 +506,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   _editHearingFromDashboard(h),
                             ),
                           );
+                          final showOverdueHeading =
+                              i == futureCount && overdueHearings.isNotEmpty;
+                          if (showOverdueHeading) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 12, bottom: 4),
+                                  child: Text(
+                                    'Overdue Hearings — showing $maxOverdueShown most recent (view all in Hearings tab)',
+                                    style: TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.red.shade700),
+                                  ),
+                                ),
+                                card,
+                              ],
+                            );
+                          }
+                          return card;
                         },
                       ),
                     ],

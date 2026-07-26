@@ -284,7 +284,8 @@ class _AddEditClientScreenState extends State<AddEditClientScreen> {
           ),
         ),
       ),
-      body: ListView(
+      body: SafeArea(
+        child: ListView(
         controller: _scrollController,
         padding: const EdgeInsets.all(12),
         children: [
@@ -589,6 +590,7 @@ class _AddEditClientScreenState extends State<AddEditClientScreen> {
           ),
           const SizedBox(height: 20),
         ],
+      ),
       ),
     );
   }

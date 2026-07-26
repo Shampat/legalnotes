@@ -14,13 +14,43 @@ class ClientDetailScreen extends StatefulWidget {
   State<ClientDetailScreen> createState() => _ClientDetailScreenState();
 }
 
-class _ClientDetailScreenState extends State<ClientDetailScreen> {
+class _ClientDetailScreenState extends State<ClientDetailScreen>
+    with WidgetsBindingObserver {
   late final int _clientKey;
+  String? _pendingContactChannel;
+  bool _hasPausedSincePending = false;
 
   @override
   void initState() {
     super.initState();
     _clientKey = widget.client.key as int;
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (_pendingContactChannel == null) return;
+
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive) {
+      _hasPausedSincePending = true;
+      return;
+    }
+
+    if (state == AppLifecycleState.resumed && _hasPausedSincePending) {
+      final channel = _pendingContactChannel!;
+      _pendingContactChannel = null;
+      _hasPausedSincePending = false;
+      Future.delayed(const Duration(milliseconds: 400), () {
+        if (mounted) _showContactOutcomeDialog(channel);
+      });
+    }
   }
 
   List<CommunicationLog> _logs() {
@@ -30,31 +60,41 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
 
-  Future<void> _launch(String url) async {
+  Future<bool> _launch(String url) async {
     final uri = Uri.parse(url);
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
+      return true;
     } else {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Could not open: $url')),
         );
       }
+      return false;
     }
   }
 
   Future<void> _handleContact(String channel) async {
     final client = widget.client;
+    bool launched = false;
 
     if (channel == 'call') {
-      await _launch('tel:${client.phone}');
+      launched = await _launch('tel:${client.phone}');
     } else if (channel == 'email') {
-      await _launch('mailto:${client.email}');
+      launched = await _launch('mailto:${client.email}');
     } else if (channel == 'whatsapp') {
       final phone = client.phone.replaceAll(RegExp(r'[^\d]'), '');
-      await _launch('https://wa.me/$phone');
+      launched = await _launch('https://wa.me/$phone');
     }
 
+    if (!launched) return;
+
+    _hasPausedSincePending = false;
+    _pendingContactChannel = channel;
+  }
+
+  Future<void> _showContactOutcomeDialog(String channel) async {
     if (!mounted) return;
 
     final options = channel == 'call'
@@ -123,7 +163,7 @@ class _ClientDetailScreenState extends State<ClientDetailScreen> {
         status: status,
       ),
     );
-    setState(() {});
+    if (mounted) setState(() {});
   }
 
   void _sendNonEngagementLetter() async {
@@ -157,7 +197,7 @@ ${HiveService.settingsBox.get('officeName', defaultValue: 'Our Law Office')}
     // Mark as sent
     client.nonEngagementLetterSent = true;
     await client.save();
-    setState(() {});
+    if (mounted) setState(() {});
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -340,31 +380,26 @@ ${HiveService.settingsBox.get('officeName', defaultValue: 'Our Law Office')}
             },
           ),
           IconButton(
-            icon: const Icon(Icons.delete, color: Colors.red),
-            tooltip: 'Delete Client',
+            icon: const Icon(Icons.info_outline, color: Colors.white),
+            tooltip: 'Why can\'t I delete this client?',
             onPressed: () async {
-              final confirm = await showDialog<bool>(
+              await showDialog<void>(
                 context: context,
                 builder: (_) => AlertDialog(
-                  title: const Text('Delete Client?'),
-                  content: Text('Delete "${widget.client.fullName}"?\nThis cannot be undone.'),
+                  title: const Text('Client Records Cannot Be Deleted'),
+                  content: const Text(
+                    'To support future conflict checks, client records are kept permanently and cannot be deleted, even if the matter has closed.\n\n'
+                    'If this client is no longer active, you can note that in their file.',
+                  ),
                   actions: [
-                    TextButton(
-                        onPressed: () => Navigator.pop(context, false),
-                        child: const Text('Cancel')),
                     ElevatedButton(
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                      onPressed: () => Navigator.pop(context, true),
-                      child: const Text('Delete', style: TextStyle(color: Colors.white)),
+                      style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF000080)),
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Understood', style: TextStyle(color: Colors.white)),
                     ),
                   ],
                 ),
               );
-              if (confirm == true) {
-                widget.client.delete();
-                if (!context.mounted) return;
-                Navigator.pop(context);
-              }
             },
           ),
         ],

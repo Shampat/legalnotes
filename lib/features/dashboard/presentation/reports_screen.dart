@@ -327,9 +327,13 @@ class ReportsScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label,
-              style: const TextStyle(
-                  fontSize: 15, color: Colors.black87)),
+          Expanded(
+            child: Text(label,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                    fontSize: 15, color: Colors.black87)),
+          ),
+          const SizedBox(width: 8),
           Text(value,
               style: TextStyle(
                   fontSize: 15,

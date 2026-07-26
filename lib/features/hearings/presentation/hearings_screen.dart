@@ -224,7 +224,7 @@ class _HearingsScreenState extends State<HearingsScreen>
       child: ListTile(
         leading: Icon(Icons.gavel, color: color),
         title: Text(
-          h.caseTitle,
+          h.getClientName(),
           style:
               TextStyle(fontWeight: FontWeight.bold, color: color),
         ),
@@ -232,7 +232,7 @@ class _HearingsScreenState extends State<HearingsScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-                '${h.getClientName()} • ${TimeOfDay.fromDateTime(h.dateTime).format(context)}'),
+                '${h.caseTitle} • ${TimeOfDay.fromDateTime(h.dateTime).format(context)}'),
             if (h.court.isNotEmpty)
               Text(h.court,
                   style: const TextStyle(fontSize: 12)),
@@ -270,14 +270,14 @@ class _HearingsScreenState extends State<HearingsScreen>
               const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           child: ListTile(
             leading: Icon(Icons.gavel, color: color),
-            title: Text(h.caseTitle,
+            title: Text(h.getClientName(),
                 style: TextStyle(
                     fontWeight: FontWeight.bold, color: color)),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                    '${h.getClientName()} • ${h.dateTime.toLocal().toString().split(' ')[0]} at ${TimeOfDay.fromDateTime(h.dateTime).format(context)}'),
+                    '${h.caseTitle} • ${h.dateTime.toLocal().toString().split(' ')[0]} at ${TimeOfDay.fromDateTime(h.dateTime).format(context)}'),
                 if (h.court.isNotEmpty) Text(h.court),
                 if (h.opposingParty.isNotEmpty)
                   Text('vs ${h.opposingParty}',

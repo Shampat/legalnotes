@@ -85,7 +85,7 @@ class BackupUtils {
       };
 
       final backup = {
-        'version': 2,
+        'version': 3,
         'exportedAt': DateTime.now().toIso8601String(),
         'clients': clients,
         'hearings': hearings,
@@ -115,7 +115,9 @@ class BackupUtils {
     }
   }
 
-  /// Import data from a JSON backup file
+  /// Import (merge) data from a JSON backup file.
+  /// This NEVER deletes or overwrites existing data — it only adds
+  /// records from the backup that don't already exist.
   static Future<bool> importBackup() async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -131,18 +133,30 @@ class BackupUtils {
       final json = await File(filePath).readAsString();
       final backup = jsonDecode(json) as Map<String, dynamic>;
 
-      // Restore settings
+      // Restore settings (safe to overwrite — single values, not records)
       if (backup['settings'] != null) {
         final settings = backup['settings'] as Map<String, dynamic>;
-        await HiveService.settingsBox.put(
-            'officeName', settings['officeName'] ?? 'Jolly Law Office');
-        await HiveService.settingsBox
-            .put('taxRate', (settings['taxRate'] as num?)?.toDouble() ?? 0.0);
+        if (HiveService.settingsBox.get('officeName') == null) {
+          await HiveService.settingsBox.put(
+              'officeName', settings['officeName'] ?? 'Jolly Law Office');
+        }
+        if (HiveService.settingsBox.get('taxRate') == null) {
+          await HiveService.settingsBox.put(
+              'taxRate', (settings['taxRate'] as num?)?.toDouble() ?? 0.0);
+        }
       }
 
-      // Restore clients
-      await HiveService.clientsBox.clear();
+      // --- Merge clients ---
+      // Map: backup's old key -> actual key used in this box (existing or newly added)
+      final Map<int, int> clientKeyMap = {};
+      final existingClients = HiveService.clientsBox.values.toList();
+
+      String normalizedPhone(String p) => p.replaceAll(RegExp(r'[^\d]'), '');
+      String normalizedName(String f, String l) =>
+          '$f $l'.trim().toLowerCase();
+
       for (final c in (backup['clients'] as List)) {
+        final oldKey = c['key'] as int;
         String firstName = c['firstName'] as String? ?? '';
         String lastName = c['lastName'] as String? ?? '';
         if (firstName.isEmpty && lastName.isEmpty && c['name'] != null) {
@@ -150,34 +164,60 @@ class BackupUtils {
           firstName = parts.first;
           lastName = parts.length > 1 ? parts.sublist(1).join(' ') : '';
         }
-        final client = Client(
-          firstName: firstName,
-          lastName: lastName,
-          phone: c['phone'] ?? '',
-          email: c['email'] ?? '',
-          address: c['address'] ?? '',
-          totalInvoiced: (c['totalInvoiced'] as num?)?.toDouble() ?? 0.0,
-          invoiceTaxRate: (c['invoiceTaxRate'] as num?)?.toDouble() ?? 0.0,
-          clientStatus: c['clientStatus'] as String? ?? 'prospective',
-          matterDescription: c['matterDescription'] as String? ?? '',
-          consultationDate: c['consultationDate'] != null
-              ? DateTime.parse(c['consultationDate'])
-              : null,
-          retainerSigned: c['retainerSigned'] as bool? ?? false,
-          nonEngagementLetterSent:
-              c['nonEngagementLetterSent'] as bool? ?? false,
-          dateOfBirth: c['dateOfBirth'] as String?,
-          companyName: c['companyName'] as String?,
-          createdAt: c['createdAt'] != null
-              ? DateTime.parse(c['createdAt'])
-              : DateTime.now(),
-        );
-        await HiveService.clientsBox.put(c['key'], client);
+        final phone = c['phone'] as String? ?? '';
+
+        // Look for an existing matching client (by name or phone)
+        Client? match;
+        for (final ec in existingClients) {
+          final samePhone = phone.isNotEmpty &&
+              ec.phone.isNotEmpty &&
+              normalizedPhone(ec.phone) == normalizedPhone(phone);
+          final sameName = normalizedName(firstName, lastName) ==
+              normalizedName(ec.firstName, ec.lastName);
+          if (samePhone || sameName) {
+            match = ec;
+            break;
+          }
+        }
+
+        if (match != null) {
+          // Already exists — keep current data, just map the key
+          clientKeyMap[oldKey] = match.key as int;
+        } else {
+          // New client — add fresh, let Hive assign a safe new key
+          final client = Client(
+            firstName: firstName,
+            lastName: lastName,
+            phone: phone,
+            email: c['email'] ?? '',
+            address: c['address'] ?? '',
+            totalInvoiced: (c['totalInvoiced'] as num?)?.toDouble() ?? 0.0,
+            invoiceTaxRate: (c['invoiceTaxRate'] as num?)?.toDouble() ?? 0.0,
+            clientStatus: c['clientStatus'] as String? ?? 'prospective',
+            matterDescription: c['matterDescription'] as String? ?? '',
+            consultationDate: c['consultationDate'] != null
+                ? DateTime.parse(c['consultationDate'])
+                : null,
+            retainerSigned: c['retainerSigned'] as bool? ?? false,
+            nonEngagementLetterSent:
+                c['nonEngagementLetterSent'] as bool? ?? false,
+            dateOfBirth: c['dateOfBirth'] as String?,
+            companyName: c['companyName'] as String?,
+            createdAt: c['createdAt'] != null
+                ? DateTime.parse(c['createdAt'])
+                : DateTime.now(),
+          );
+          final newKey = await HiveService.clientsBox.add(client);
+          clientKeyMap[oldKey] = newKey;
+        }
       }
 
-      // Restore hearings
-      await HiveService.hearingsBox.clear();
+      // --- Merge hearings (add-only, remap clientKey) ---
       for (final h in (backup['hearings'] as List)) {
+        final oldClientKey = h['clientKey'] as int;
+        final newClientKey = clientKeyMap[oldClientKey];
+        if (newClientKey == null) continue; // orphaned reference, skip
+
         List<OpposingParty>? opposingPartiesList;
         if (h['opposingPartiesList'] != null) {
           opposingPartiesList = (h['opposingPartiesList'] as List)
@@ -189,21 +229,24 @@ class BackupUtils {
         }
         final hearing = Hearing(
           caseTitle: h['caseTitle'],
-          clientKey: h['clientKey'],
+          clientKey: newClientKey,
           dateTime: DateTime.parse(h['dateTime']),
           court: h['court'] ?? '',
           notes: h['notes'] ?? '',
           opposingParty: h['opposingParty'] ?? '',
           opposingPartiesList: opposingPartiesList,
         );
-        await HiveService.hearingsBox.put(h['key'], hearing);
+        await HiveService.hearingsBox.add(hearing);
       }
 
-      // Restore payments
-      await HiveService.paymentsBox.clear();
+      // --- Merge payments (add-only, remap clientKey) ---
       for (final p in (backup['payments'] as List)) {
+        final oldClientKey = p['clientKey'] as int;
+        final newClientKey = clientKeyMap[oldClientKey];
+        if (newClientKey == null) continue;
+
         final payment = Payment(
-          clientKey: p['clientKey'],
+          clientKey: newClientKey,
           amount: (p['amount'] as num).toDouble(),
           description: p['description'] ?? '',
           dueDate: DateTime.parse(p['dueDate']),
@@ -215,37 +258,48 @@ class BackupUtils {
           modeOfPayment: p['modeOfPayment'] as String? ?? 'bank_transfer',
           isRetainer: p['isRetainer'] as bool? ?? false,
         );
-        await HiveService.paymentsBox.put(p['key'], payment);
+        await HiveService.paymentsBox.add(payment);
       }
 
-      // Restore documents
-      await HiveService.documentsBox.clear();
+      // --- Merge documents (add-only, remap clientKey) ---
       for (final d in (backup['documents'] as List)) {
+        final oldClientKey = int.tryParse(d['clientKey'].toString());
+        if (oldClientKey == null) continue;
+        final newClientKey = clientKeyMap[oldClientKey];
+        if (newClientKey == null) continue;
+
         final doc = Document(
-          clientKey: d['clientKey'],
+          clientKey: newClientKey.toString(),
           title: d['title'],
           content: d['content'] ?? '',
           fileName: d['fileName'],
           createdAt: DateTime.parse(d['createdAt']),
         );
-        await HiveService.documentsBox.put(d['key'], doc);
+        await HiveService.documentsBox.add(doc);
       }
 
-      // Restore communication logs
-      await HiveService.communicationLogsBox.clear();
+      // --- Merge communication logs (add-only, remap clientKey) ---
       for (final l in (backup['communicationLogs'] as List)) {
+        final oldClientKey = l['clientKey'] as int;
+        final newClientKey = clientKeyMap[oldClientKey];
+        if (newClientKey == null) continue;
+
         final log = CommunicationLog(
-          clientKey: l['clientKey'],
+          clientKey: newClientKey,
           note: l['note'],
           channel: l['channel'],
           status: l['status'] ?? 'connected',
           createdAt: DateTime.parse(l['createdAt']),
         );
-        await HiveService.communicationLogsBox.put(l['key'], log);
+        await HiveService.communicationLogsBox.add(log);
       }
 
       return true;
-    } catch (e) {
+    } catch (e, stack) {
+      // ignore: avoid_print
+      print('IMPORT ERROR: $e');
+      // ignore: avoid_print
+      print('STACK: $stack');
       return false;
     }
   }

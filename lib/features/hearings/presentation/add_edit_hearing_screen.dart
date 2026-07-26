@@ -235,14 +235,21 @@ class _AddEditHearingScreenState extends State<AddEditHearingScreen> {
                     child: Text(c.name),
                   );
                 }).toList(),
-                onChanged: (val) =>
-                    setState(() => selectedClientKey = val),
+                onChanged: (isEdit && !isOrphaned)
+                    ? null
+                    : (val) => setState(() => selectedClientKey = val),
                 decoration: InputDecoration(
                   labelText: 'Client',
                   filled: true,
-                  fillColor: Colors.indigo.shade50,
+                  fillColor: (isEdit && !isOrphaned)
+                      ? Colors.grey.shade200
+                      : Colors.indigo.shade50,
                   border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8)),
+                  helperText: (isEdit && !isOrphaned)
+                      ? 'Client cannot be changed once a hearing is created'
+                      : null,
+                  helperStyle: const TextStyle(fontSize: 11, color: Colors.grey),
                 ),
               ),
               const SizedBox(height: 12),
