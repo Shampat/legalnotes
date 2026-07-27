@@ -124,23 +124,11 @@ class _ClientsListScreenState extends State<ClientsListScreen> {
                 setState(() => _showSearch = false);
               },
             )
-          else ...[
-            IconButton(
-              icon: const Icon(Icons.upload_file, color: Colors.white),
-              tooltip: 'Import Clients',
-              onPressed: () async {
-                final imported = await Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ImportClientsScreen()),
-                );
-                if (imported == true) setState(() {});
-              },
-            ),
+          else
             IconButton(
               icon: const Icon(Icons.search, color: Colors.white),
               onPressed: () => setState(() => _showSearch = true),
             ),
-          ],
         ],
       ),
       body: clients.isEmpty

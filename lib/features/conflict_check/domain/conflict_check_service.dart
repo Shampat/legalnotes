@@ -1,3 +1,4 @@
+import 'package:intl/intl.dart';
 import '../../../shared/models/hearing.dart';
 import '../../../shared/models/client.dart';
 import 'package:hive/hive.dart';
@@ -7,10 +8,10 @@ class ConflictCheckService {
   static List<Hearing> checkClientConflict(String clientName) {
     if (clientName.trim().isEmpty) return [];
     final box = Hive.box<Hearing>('hearings');
+    final query = clientName.trim().toLowerCase();
     return box.values.where((hearing) {
-      return hearing.opposingParty
-          .toLowerCase()
-          .contains(clientName.trim().toLowerCase());
+      return hearing.opposingParties
+          .any((op) => op.name.toLowerCase().contains(query));
     }).toList();
   }
 
@@ -21,11 +22,9 @@ class ConflictCheckService {
     final clientBox = Hive.box<Client>('clients');
     final query = opposingParty.trim().toLowerCase();
     final queryDigits = query.replaceAll(RegExp(r'[^\d]'), '');
-
     return clientBox.values.where((client) {
       // Match on name
       if (client.name.toLowerCase().contains(query)) return true;
-
       // Match on phone — only if the search text actually contains digits
       if (queryDigits.isNotEmpty && client.phone.isNotEmpty) {
         final clientPhoneDigits = client.phone.replaceAll(RegExp(r'[^\d]'), '');
@@ -33,7 +32,6 @@ class ConflictCheckService {
           return true;
         }
       }
-
       // Match on email
       if (client.email.isNotEmpty &&
           client.email.toLowerCase().contains(query)) {
@@ -41,6 +39,49 @@ class ConflictCheckService {
       }
       return false;
     }).toList();
+  }
+
+  /// Check a NEW client's identity against every opposing party ever
+  /// recorded across all hearings, for all clients, all time.
+  /// This is the core "did this person appear as an adverse party in the
+  /// past" check — the main safeguard for new client intake.
+  static List<Map<String, dynamic>> checkNewClientAgainstHistory({
+    required String firstName,
+    required String lastName,
+    required String phone,
+  }) {
+    final hearingBox = Hive.box<Hearing>('hearings');
+    final clientBox = Hive.box<Client>('clients');
+
+    final fullName = '$firstName $lastName'.trim().toLowerCase();
+    final phoneDigits = phone.replaceAll(RegExp(r'[^\d]'), '');
+
+    final results = <Map<String, dynamic>>[];
+
+    for (final hearing in hearingBox.values) {
+      for (final op in hearing.opposingParties) {
+        final opName = op.name.trim().toLowerCase();
+        final opPhoneDigits = (op.phone ?? '').replaceAll(RegExp(r'[^\d]'), '');
+
+        final nameMatches = fullName.isNotEmpty &&
+            (opName.contains(fullName) || fullName.contains(opName));
+        final phoneMatches = phoneDigits.isNotEmpty &&
+            opPhoneDigits.isNotEmpty &&
+            opPhoneDigits == phoneDigits;
+
+        if (nameMatches || phoneMatches) {
+          final matterClient = clientBox.get(hearing.clientKey);
+          results.add({
+            'opposingPartyName': op.name,
+            'caseTitle': hearing.caseTitle,
+            'hearingDate': hearing.dateTime,
+            'matterClientName': matterClient?.fullName ?? 'Unknown Client',
+            'matchedOn': nameMatches ? 'name' : 'phone',
+          });
+        }
+      }
+    }
+    return results;
   }
 
   /// Full conflict check — returns a summary of all conflicts
@@ -79,15 +120,24 @@ class ConflictCheckService {
       }
     }
 
-    // Check against opposing parties in hearings
+    // Check against opposing parties in hearings (multi-entry aware)
     for (final hearing in hearingBox.values) {
-      if (hearing.opposingParty.trim().isEmpty) continue;
-      if (trimmedName.isNotEmpty &&
-          hearing.opposingParty
-              .toLowerCase()
-              .contains(trimmedName.toLowerCase())) {
-        conflicts
-            .add('Name matches opposing party in: ${hearing.caseTitle}');
+      for (final op in hearing.opposingParties) {
+        final opName = op.name.trim().toLowerCase();
+        final opPhoneDigits = (op.phone ?? '').replaceAll(RegExp(r'[^\d]'), '');
+
+        final nameMatches = trimmedName.isNotEmpty &&
+            opName.isNotEmpty &&
+            opName.contains(trimmedName.toLowerCase());
+        final phoneMatches = phoneDigits.isNotEmpty &&
+            opPhoneDigits.isNotEmpty &&
+            opPhoneDigits == phoneDigits;
+
+        if (nameMatches || phoneMatches) {
+          final dateStr = DateFormat('dd MMM yyyy').format(hearing.dateTime);
+          conflicts.add(
+              'Matches opposing party "${op.name}" in "${hearing.caseTitle}" ($dateStr)');
+        }
       }
     }
 

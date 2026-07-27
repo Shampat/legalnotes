@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:csv/csv.dart';
 import '../services/database/hive_service.dart';
 import '../../shared/models/client.dart';
 import '../../shared/models/hearing.dart';
@@ -96,20 +97,87 @@ class BackupUtils {
       };
 
       final json = const JsonEncoder.withIndent('  ').convert(backup);
-      final dir = await getTemporaryDirectory();
       final date = DateTime.now().toString().split(' ')[0];
-      final file = File('${dir.path}/legalnotes_backup_$date.json');
-      await file.writeAsString(json);
+      final fileName = 'legalnotes_backup_$date.json';
+      final bytes = utf8.encode(json);
 
+      final savedPath = await FilePicker.platform.saveFile(
+        dialogTitle: 'Save Backup',
+        fileName: fileName,
+        bytes: bytes,
+      );
+
+      final dir = await getTemporaryDirectory();
+      final tempFile = File('${dir.path}/$fileName');
+      await tempFile.writeAsBytes(bytes);
       await SharePlus.instance.share(
         ShareParams(
-          files: [XFile(file.path)],
+          files: [XFile(tempFile.path)],
           text: 'LegalNotes Backup - $date',
           subject: 'LegalNotes Backup',
         ),
       );
 
-      return file.path;
+      return savedPath ?? tempFile.path;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Export just the client contact list as a portable CSV file
+  /// (name, phone, email, DOB, matter, etc.) — for taking data to another
+  /// system, or as a simple human-readable record. Does NOT include
+  /// hearings, payments, or communication history (see exportBackup for
+  /// the full, app-native backup).
+  static Future<String?> exportClientsCsv() async {
+    try {
+      final clients = HiveService.clientsBox.values.toList();
+      final rows = <List<dynamic>>[
+        [
+          'First Name',
+          'Last Name',
+          'Phone',
+          'Email',
+          'Address',
+          'Date of Birth',
+          'Company Name',
+          'Matter Description',
+        ],
+        ...clients.map((c) => [
+              c.firstName,
+              c.lastName,
+              c.phone,
+              c.email,
+              c.address,
+              c.dateOfBirth ?? '',
+              c.companyName ?? '',
+              c.matterDescription,
+            ]),
+      ];
+
+      final csvString = const ListToCsvConverter().convert(rows);
+      final date = DateTime.now().toString().split(' ')[0];
+      final fileName = 'legalnotes_clients_$date.csv';
+      final bytes = utf8.encode(csvString);
+
+      final savedPath = await FilePicker.platform.saveFile(
+        dialogTitle: 'Save Client List (CSV)',
+        fileName: fileName,
+        bytes: bytes,
+      );
+
+      final dir = await getTemporaryDirectory();
+      final tempFile = File('${dir.path}/$fileName');
+      await tempFile.writeAsBytes(bytes);
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(tempFile.path)],
+          text: 'Client list export - $date',
+          subject: 'LegalNotes Client List',
+        ),
+      );
+
+      return savedPath ?? tempFile.path;
     } catch (e) {
       return null;
     }

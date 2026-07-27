@@ -12,6 +12,7 @@ import '../../conflict_check/domain/conflict_check_service.dart';
 import '../../conflict_check/presentation/conflict_report_screen.dart';
 import '../../../core/utils/backup_utils.dart';
 import 'reports_screen.dart';
+import '../../clients/presentation/import_clients_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -416,6 +417,61 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ],
                       ),
 
+                      const Padding(
+                        padding: EdgeInsets.only(top: 4, left: 2),
+                        child: Text(
+                          'Full copy — hearings, billing & conflict history',
+                          style: TextStyle(fontSize: 11, color: Colors.grey),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              icon: const Icon(Icons.table_chart, color: Color(0xFF000080)),
+                              label: const Text('Export CSV',
+                                  style: TextStyle(color: Color(0xFF000080))),
+                              style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(color: Color(0xFF000080))),
+                              onPressed: () async {
+                                final path = await BackupUtils.exportClientsCsv();
+                                if (!context.mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(path != null
+                                          ? 'Client list exported!'
+                                          : 'Export failed')),
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              icon: const Icon(Icons.upload_file, color: Color(0xFF000080)),
+                              label: const Text('Import CSV',
+                                  style: TextStyle(color: Color(0xFF000080))),
+                              style: OutlinedButton.styleFrom(
+                                  side: const BorderSide(color: Color(0xFF000080))),
+                              onPressed: () async {
+                                final imported = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (_) => const ImportClientsScreen()),
+                                );
+                                if (imported == true) setState(() {});
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 4, left: 2),
+                        child: Text(
+                          'Contacts only — for sharing or bringing in a client list',
+                          style: TextStyle(fontSize: 11, color: Colors.grey),
+                        ),
+                      ),
                       const SizedBox(height: 24),
 
                       // Upcoming hearings
