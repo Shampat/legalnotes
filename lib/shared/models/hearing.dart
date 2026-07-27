@@ -28,6 +28,11 @@ class Hearing extends HiveObject {
   String opposingParty;
   @HiveField(6)
   List<OpposingParty>? opposingPartiesList;
+  @HiveField(7)
+  String? outcomeStatus; // null/empty = pending, 'completed', 'adjourned'
+  @HiveField(8)
+  String? outcomeNote;
+
   Hearing({
     required this.caseTitle,
     required this.clientKey,
@@ -36,6 +41,8 @@ class Hearing extends HiveObject {
     this.notes = '',
     this.opposingParty = '',
     this.opposingPartiesList,
+    this.outcomeStatus,
+    this.outcomeNote,
   });
 
   /// Unified accessor: uses the new multi-entry list if present,
@@ -50,11 +57,16 @@ class Hearing extends HiveObject {
     return [];
   }
 
+  bool get isCompleted => outcomeStatus == 'completed';
+  bool get isAdjourned => outcomeStatus == 'adjourned';
+  bool get hasOutcome => isCompleted || isAdjourned;
+
   String getClientName() {
     final clientBox = Hive.box<Client>('clients');
     final client = clientBox.get(clientKey);
     return client?.fullName ?? 'Unknown Client';
   }
+
   @override
   String toString() {
     return '\$caseTitle - \${dateTime.toLocal().toString().split(' ')[0]}';

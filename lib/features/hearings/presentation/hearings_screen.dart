@@ -214,6 +214,102 @@ class _HearingsScreenState extends State<HearingsScreen>
     );
   }
 
+  Future<void> _markOutcome(Hearing h, String status) async {
+    final noteCtrl = TextEditingController(text: h.outcomeNote ?? '');
+    final label = status == 'completed' ? 'Completed' : 'Adjourned';
+
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text('Mark as $label'),
+        content: TextField(
+          controller: noteCtrl,
+          maxLines: 3,
+          decoration: const InputDecoration(
+            labelText: 'Note (optional)',
+            hintText: 'e.g. Adjourned to Sept 15 for disclosure',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF000080)),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Save', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      h
+        ..outcomeStatus = status
+        ..outcomeNote = noteCtrl.text.trim().isEmpty ? null : noteCtrl.text.trim()
+        ..save();
+      if (mounted) setState(() {});
+    }
+  }
+
+  Future<void> _clearOutcome(Hearing h) async {
+    h
+      ..outcomeStatus = null
+      ..outcomeNote = null
+      ..save();
+    if (mounted) setState(() {});
+  }
+
+  Widget _outcomeBadge(Hearing h) {
+    if (!h.hasOutcome) return const SizedBox.shrink();
+    final isCompleted = h.isCompleted;
+    final color = isCompleted ? Colors.green : Colors.blue;
+    return Container(
+      margin: const EdgeInsets.only(top: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(isCompleted ? Icons.check_circle : Icons.event_repeat,
+              size: 14, color: color),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              isCompleted ? 'Completed' : 'Adjourned',
+              style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.bold),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _outcomeMenu(Hearing h) {
+    return PopupMenuButton<String>(
+      icon: const Icon(Icons.more_vert, color: Color(0xFF000080)),
+      onSelected: (value) {
+        if (value == 'clear') {
+          _clearOutcome(h);
+        } else {
+          _markOutcome(h, value);
+        }
+      },
+      itemBuilder: (_) => [
+        const PopupMenuItem(value: 'completed', child: Text('Mark Completed')),
+        const PopupMenuItem(value: 'adjourned', child: Text('Mark Adjourned')),
+        if (h.hasOutcome)
+          const PopupMenuItem(value: 'clear', child: Text('Clear Status')),
+      ],
+    );
+  }
+
   Widget _hearingTile(Hearing h, Color color) {
     return Card(
       shape: RoundedRectangleBorder(
@@ -242,10 +338,11 @@ class _HearingsScreenState extends State<HearingsScreen>
                       fontSize: 12,
                       color: Colors.red.shade400,
                       fontStyle: FontStyle.italic)),
+            _outcomeBadge(h),
           ],
         ),
         isThreeLine: true,
-        trailing: const Icon(Icons.chevron_right, color: Color(0xFF000080)),
+        trailing: _outcomeMenu(h),
         onTap: () => _openHearing(h),
       ),
     );
