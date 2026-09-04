@@ -6,7 +6,16 @@ import '../../../shared/models/client.dart';
 
 class AddEditHearingScreen extends StatefulWidget {
   final Hearing? hearing;
-  const AddEditHearingScreen({super.key, this.hearing});
+  final int? prefillClientKey;
+  final String? prefillCaseTitle;
+  final int? linkedFromHearingKey;
+  const AddEditHearingScreen({
+    super.key,
+    this.hearing,
+    this.prefillClientKey,
+    this.prefillCaseTitle,
+    this.linkedFromHearingKey,
+  });
 
   @override
   State<AddEditHearingScreen> createState() => _AddEditHearingScreenState();
@@ -36,20 +45,20 @@ class _AddEditHearingScreenState extends State<AddEditHearingScreen> {
   @override
   void initState() {
     super.initState();
-    titleCtrl = TextEditingController(text: widget.hearing?.caseTitle ?? '');
+    titleCtrl = TextEditingController(
+        text: widget.hearing?.caseTitle ?? widget.prefillCaseTitle ?? '');
     courtCtrl = TextEditingController(text: widget.hearing?.court ?? '');
     notesCtrl = TextEditingController(text: widget.hearing?.notes ?? '');
-
     final existing = widget.hearing?.opposingParties ?? [];
     opposingParties = existing.isNotEmpty
         ? existing
             .map((op) => _OpposingPartyEntry(name: op.name, phone: op.phone ?? ''))
             .toList()
         : [_OpposingPartyEntry()];
-
     date = widget.hearing?.dateTime;
-    selectedClientKey =
-        widget.hearing?.clientKey == 0 ? null : widget.hearing?.clientKey;
+    selectedClientKey = widget.hearing?.clientKey == 0
+        ? null
+        : (widget.hearing?.clientKey ?? widget.prefillClientKey);
   }
 
   @override

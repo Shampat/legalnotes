@@ -29,9 +29,18 @@ class Hearing extends HiveObject {
   @HiveField(6)
   List<OpposingParty>? opposingPartiesList;
   @HiveField(7)
-  String? outcomeStatus; // null/empty = pending, 'completed', 'adjourned'
+  // 'completed', 'adjourned', 'appeal', 'order_received', 'further_action'
+  String? outcomeStatus;
   @HiveField(8)
   String? outcomeNote;
+  @HiveField(9)
+  String? nextAction;
+  @HiveField(10)
+  DateTime? nextActionDueDate;
+  @HiveField(11)
+  // If this hearing was created as an appeal of another hearing, this
+  // points back to the original hearing's key, for traceability.
+  int? linkedFromHearingKey;
 
   Hearing({
     required this.caseTitle,
@@ -43,6 +52,9 @@ class Hearing extends HiveObject {
     this.opposingPartiesList,
     this.outcomeStatus,
     this.outcomeNote,
+    this.nextAction,
+    this.nextActionDueDate,
+    this.linkedFromHearingKey,
   });
 
   /// Unified accessor: uses the new multi-entry list if present,
@@ -59,7 +71,27 @@ class Hearing extends HiveObject {
 
   bool get isCompleted => outcomeStatus == 'completed';
   bool get isAdjourned => outcomeStatus == 'adjourned';
-  bool get hasOutcome => isCompleted || isAdjourned;
+  bool get isAppealed => outcomeStatus == 'appeal';
+  bool get isOrderReceived => outcomeStatus == 'order_received';
+  bool get isFurtherActionRequired => outcomeStatus == 'further_action';
+  bool get hasOutcome => outcomeStatus != null && outcomeStatus!.isNotEmpty;
+
+  String get outcomeLabel {
+    switch (outcomeStatus) {
+      case 'completed':
+        return 'Completed';
+      case 'adjourned':
+        return 'Adjourned';
+      case 'appeal':
+        return 'Appealed';
+      case 'order_received':
+        return 'Order Received';
+      case 'further_action':
+        return 'Further Action Required';
+      default:
+        return '';
+    }
+  }
 
   String getClientName() {
     final clientBox = Hive.box<Client>('clients');

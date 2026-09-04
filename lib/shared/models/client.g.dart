@@ -31,14 +31,15 @@ class ClientAdapter extends TypeAdapter<Client> {
       nonEngagementLetterSent: fields[10] as bool,
       dateOfBirth: fields[11] as String?,
       companyName: fields[12] as String?,
-      invoiceTaxRate: fields[15] as double,
+      isArchived: fields[15] as bool,
+      invoiceTaxRate: fields[16] as double,
     )..name = fields[0] as String;
   }
 
   @override
   void write(BinaryWriter writer, Client obj) {
     writer
-      ..writeByte(16)
+      ..writeByte(17)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -70,6 +71,8 @@ class ClientAdapter extends TypeAdapter<Client> {
       ..writeByte(14)
       ..write(obj.lastName)
       ..writeByte(15)
+      ..write(obj.isArchived)
+      ..writeByte(16)
       ..write(obj.invoiceTaxRate);
   }
 

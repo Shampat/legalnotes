@@ -63,13 +63,16 @@ class HearingAdapter extends TypeAdapter<Hearing> {
       opposingPartiesList: (fields[6] as List?)?.cast<OpposingParty>(),
       outcomeStatus: fields[7] as String?,
       outcomeNote: fields[8] as String?,
+      nextAction: fields[9] as String?,
+      nextActionDueDate: fields[10] as DateTime?,
+      linkedFromHearingKey: fields[11] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Hearing obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.caseTitle)
       ..writeByte(1)
@@ -87,7 +90,13 @@ class HearingAdapter extends TypeAdapter<Hearing> {
       ..writeByte(7)
       ..write(obj.outcomeStatus)
       ..writeByte(8)
-      ..write(obj.outcomeNote);
+      ..write(obj.outcomeNote)
+      ..writeByte(9)
+      ..write(obj.nextAction)
+      ..writeByte(10)
+      ..write(obj.nextActionDueDate)
+      ..writeByte(11)
+      ..write(obj.linkedFromHearingKey);
   }
 
   @override

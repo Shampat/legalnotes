@@ -95,7 +95,7 @@ class _BillingScreenState extends State<BillingScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
                       children: [
-                        SizedBox(width: 105, child: _summaryTile("Invoiced", '\$${totalInvoicedWithTax.toStringAsFixed(2)}', Colors.indigo, info: "Total invoiced to clients, including applicable tax.")),
+                        SizedBox(width: 105, child: _summaryTile("T.Invoiced", '\$${totalInvoicedWithTax.toStringAsFixed(2)}', Colors.indigo, info: "Total invoiced to clients, including applicable tax.")),
                         _vDivider(),
                         SizedBox(width: 105, child: _summaryTile("Collected", '\$${totalPaid.toStringAsFixed(2)}', Colors.green, info: "Total money actually received from clients so far, including tax.")),
                         _vDivider(),

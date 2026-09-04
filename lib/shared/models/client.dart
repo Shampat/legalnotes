@@ -50,6 +50,9 @@ class Client extends HiveObject {
   @HiveField(14)
   String lastName;
   @HiveField(15)
+  bool isArchived;
+
+  @HiveField(16)
   double invoiceTaxRate;
 
   Client({
@@ -67,6 +70,7 @@ class Client extends HiveObject {
     this.nonEngagementLetterSent = false,
     this.dateOfBirth,
     this.companyName,
+    this.isArchived = false,
     this.invoiceTaxRate = 0.0,
   })  : name = '$firstName $lastName',
         createdAt = createdAt ?? DateTime.now();

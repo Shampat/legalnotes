@@ -1,0 +1,398 @@
+Resolving dependencies...
+Downloading packages...
+  _fe_analyzer_shared 67.0.0 (105.0.0 available)
+  analyzer 6.4.1 (14.1.0 available)
+  archive 4.0.7 (4.0.9 available)
+  async 2.13.0 (2.13.1 available)
+  audioplayers 6.5.1 (6.8.1 available)
+  audioplayers_android 5.2.1 (5.3.0 available)
+  audioplayers_darwin 6.3.0 (6.5.0 available)
+  audioplayers_linux 4.2.1 (4.3.0 available)
+  audioplayers_platform_interface 7.1.1 (7.2.0 available)
+  audioplayers_web 5.1.1 (5.3.0 available)
+  audioplayers_windows 4.2.1 (4.4.1 available)
+  build 2.4.1 (4.0.8 available)
+  build_config 1.1.2 (1.3.1 available)
+  build_daemon 4.1.1 (4.1.2 available)
+  build_resolvers 2.4.2 (3.0.4 available)
+  build_runner 2.4.13 (2.15.2 available)
+  build_runner_core 7.3.2 (9.3.2 available)
+  built_value 8.12.1 (8.12.6 available)
+  cli_util 0.4.2 (0.5.1 available)
+  code_builder 4.11.0 (4.11.1 available)
+  cross_file 0.3.5+1 (0.3.5+4 available)
+  csv 6.0.0 (8.0.0 available)
+  dart_style 2.3.6 (3.1.12 available)
+  dbus 0.7.11 (0.7.14 available)
+  ffi 2.1.4 (2.2.0 available)
+  file_picker 10.3.8 (11.0.2 available)
+  flutter_plugin_android_lifecycle 2.0.33 (2.0.35 available)
+  google_mobile_ads 7.0.0 (9.0.0 available)
+  http 0.13.6 (1.6.0 available)
+  image 4.7.2 (4.9.1 available)
+  intl 0.20.2 (0.20.3 available)
+  json_annotation 4.9.0 (4.12.0 available)
+  matcher 0.12.19 (0.12.20 available)
+  meta 1.18.0 (1.19.0 available)
+  package_config 2.2.0 (3.0.0 available)
+  path_provider 2.1.5 (2.1.6 available)
+  path_provider_android 2.2.22 (2.3.1 available)
+  path_provider_foundation 2.5.1 (2.6.0 available)
+  path_provider_linux 2.2.1 (2.2.2 available)
+  path_provider_platform_interface 2.1.2 (2.1.3 available)
+  petitparser 7.0.1 (7.0.2 available)
+  posix 6.0.3 (6.5.0 available)
+  share_plus 12.0.1 (13.2.1 available)
+  share_plus_platform_interface 6.1.0 (7.1.0 available)
+  shelf_web_socket 2.0.1 (3.0.0 available)
+  source_gen 1.5.0 (4.2.3 available)
+  source_helper 1.3.5 (1.3.12 available)
+  source_span 1.10.1 (1.10.2 available)
+  synchronized 3.4.0 (3.4.1 available)
+  test_api 0.7.11 (0.7.13 available)
+  url_launcher_web 2.4.1 (2.4.3 available)
+  uuid 3.0.7 (4.6.0 available)
+  vector_math 2.2.0 (2.4.0 available)
+  vm_service 15.0.2 (15.2.0 available)
+  watcher 1.2.0 (1.2.1 available)
+  webview_flutter 4.13.0 (4.14.1 available)
+  webview_flutter_android 4.10.11 (4.13.0 available)
+  webview_flutter_platform_interface 2.14.0 (2.15.1 available)
+  webview_flutter_wkwebview 3.23.5 (3.26.0 available)
+  win32 5.15.0 (6.3.0 available)
+  xml 6.6.1 (7.0.1 available)
+Got dependencies!
+61 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Launching lib/main.dart on SM A166W in debug mode...
+Running Gradle task 'assembleDebug'...                          
+WARNING: Your Android app project: app located at: /home/ssp/Desktop/Projects_app/vasapps/legalnotes/android/app/build.gradle.kts
+applies the Kotlin Gradle Plugin, which will cause build failures in future versions of Flutter. 
+Please migrate your app to Built-in Kotlin using this guide: https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers
+
+WARNING: Your app uses the following plugins that apply Kotlin Gradle Plugin (KGP): audioplayers_android, file_picker, share_plus, webview_flutter_android
+Future versions of Flutter will fail to build if your app uses plugins that apply KGP.
+
+Please check the changelogs of these plugins and upgrade to a version that supports Built-in Kotlin.
+If no such version exists, report the issue to the plugin. If necessary, here is a guide on filing 
+an issue against a plugin: https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers#report-incompatible-kotlin-gradle-plugin-usage-to-plugin-authors
+
+If you are a plugin author, please migrate your plugin to Built-in Kotlin using this guide: https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-plugin-authors
+Running Gradle task 'assembleDebug'...                              8.4s
+✓ Built build/app/outputs/flutter-apk/app-debug.apk
+Installing build/app/outputs/flutter-apk/app-debug.apk...       
+D/FlutterJNI(23570): Beginning load of flutter...
+D/FlutterJNI(23570): flutter (null) was loaded normally!
+I/flutter (23570): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+D/FlutterRenderer(23570): Width is zero. 0,0
+D/FlutterRenderer(23570): Width is zero. 0,0
+D/FlutterRenderer(23570): Width is zero. 0,0
+D/FlutterJNI(23570): Sending viewport metrics to the engine.
+D/FlutterJNI(23570): Sending viewport metrics to the engine.
+D/FlutterJNI(23570): Sending viewport metrics to the engine.
+D/FlutterJNI(23570): Sending viewport metrics to the engine.
+D/FlutterJNI(23570): Sending viewport metrics to the engine.
+Installing build/app/outputs/flutter-apk/app-debug.apk...          34.6s
+I/FlutterActivityAndFragmentDelegate(24247): If you are attempting to set --enable-dart-profiling via Intent extras to launch a Flutter component outside of using the Flutter CLI, note that support for setting engine flags on Android via Intent will soon be dropped; see https://github.com/flutter/flutter/issues/180686 for more information on this breaking change. To migrate, set --enable-dart-profiling or any other flags specified via Intent extras on the command line instead or see https://github.com/flutter/flutter/blob/main/docs/engine/Flutter-Android-Engine-Flags.md for alternative methods.
+D/FlutterJNI(24247): Beginning load of flutter...
+D/FlutterJNI(24247): flutter (null) was loaded normally!
+I/flutter (24247): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+D/FlutterRenderer(24247): Width is zero. 0,0
+D/FlutterRenderer(24247): Width is zero. 0,0
+D/FlutterRenderer(24247): Width is zero. 0,0
+D/FlutterJNI(24247): Sending viewport metrics to the engine.
+D/FlutterJNI(24247): Sending viewport metrics to the engine.
+Syncing files to device SM A166W...                                203ms
+
+Flutter run key commands.
+r Hot reload. 🔥🔥🔥
+R Hot restart.
+h List all available interactive commands.
+d Detach (terminate "flutter run" but leave application running).
+c Clear the screen
+q Quit (terminate the application on the device).
+
+A Dart VM Service on SM A166W is available at: http://127.0.0.1:37693/xw2YI9jpraA=/
+The Flutter DevTools debugger and profiler on SM A166W is available at: http://127.0.0.1:37693/xw2YI9jpraA=/devtools/?uri=ws://127.0.0.1:37693/xw2YI9jpraA=/ws
+I/apps.legalnotes(24247): Compiler allocated 5313KB to compile void android.view.ViewRootImpl.performTraversals()
+I/Choreographer(24247): Skipped 215 frames!  The application may be doing too much work on its main thread.
+I/BLASTBufferQueue(24247): [a513563 SurfaceView[com.vasapps.legalnotes/com.vasapps.legalnotes.MainActivity]@0#1](f:0,a:0,s:0) onFrameAvailable the first frame is available
+I/SurfaceView(24247): 173094243 finishedDrawing
+W/System  (24247): ClassLoader referenced unknown path: 
+D/nativeloader(24247): Configuring clns-10 for other apk . target_sdk_version=37, uses_libraries=, library_path=/data/app/~~9Hc9VuOG0F6uys_cdmsFnQ==/com.google.android.gms-9QxNM5aX4i3Cedw6QONqAw==/lib/arm64:/data/app/~~9Hc9VuOG0F6uys_cdmsFnQ==/com.google.android.gms-9QxNM5aX4i3Cedw6QONqAw==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.gms
+I/Choreographer(24247): Skipped 73 frames!  The application may be doing too much work on its main thread.
+I/BLASTBufferQueue_Java(24247): update, w= 1080 h= 2340 mName = VRI[MainActivity]@4819654 mNativeObject= 0xb400006f28f64000 sc.mNativeObject= 0xb400006e101e2140 format= -3 caller= android.view.ViewRootImpl.updateBlastSurfaceIfNeeded:3592 android.view.ViewRootImpl.relayoutWindow:11813 android.view.ViewRootImpl.performTraversals:4840 android.view.ViewRootImpl.doTraversal:3959 android.view.ViewRootImpl$TraversalRunnable.run:13034 android.view.Choreographer$CallbackRecord.run:1961 
+I/VRI[MainActivity]@4819654(24247): Relayout returned: old=(0,0,1080,2340) new=(0,0,1080,2340) relayoutAsync=false req=(1080,2340)0 dur=4 res=0x1 s={true 0xb400006e20230900} ch=false seqId=0
+D/FlutterJNI(24247): Sending viewport metrics to the engine.
+I/VRI[MainActivity]@4819654(24247): updateBoundsLayer: t=android.view.SurfaceControl$Transaction@8e5f38b sc=Surface(name=Bounds for - com.vasapps.legalnotes/com.vasapps.legalnotes.MainActivity@0#26651)/@0x29f3c68 frame=1
+D/VRI[MainActivity]@4819654(24247): reportNextDraw android.view.ViewRootImpl.performTraversals:5507 android.view.ViewRootImpl.doTraversal:3959 android.view.ViewRootImpl$TraversalRunnable.run:13034 android.view.Choreographer$CallbackRecord.run:1961 android.view.Choreographer$CallbackRecord.run:1970 
+D/VRI[MainActivity]@4819654(24247): Setup new sync=wmsSync-VRI[MainActivity]@4819654#1
+I/VRI[MainActivity]@4819654(24247): Creating new active sync group VRI[MainActivity]@4819654#2
+D/VRI[MainActivity]@4819654(24247): Draw frame after cancel
+D/VRI[MainActivity]@4819654(24247): registerCallbacksForSync syncBuffer=false
+D/SurfaceView(24247): 173094243 updateSurfacePosition RenderWorker, frameNr = 1, position = [0, 0, 1080, 2340] surfaceSize = 1080x2340
+I/SV[173094243 MainActivity](24247): uSP: rtp = Rect(0, 0 - 1080, 2340) rtsw = 1080 rtsh = 2340
+I/SV[173094243 MainActivity](24247): onSSPAndSRT: pl = 0 pt = 0 sx = 1.0 sy = 1.0
+I/SV[173094243 MainActivity](24247): aOrMT: VRI[MainActivity]@4819654 t = android.view.SurfaceControl$Transaction@c5fb714 fN = 1 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionChanged:2029 android.graphics.RenderNode$CompositePositionUpdateListener.positionChanged:401 
+I/VRI[MainActivity]@4819654(24247): mWNT: t=0xb400006f37855400 mBlastBufferQueue=0xb400006f28f64000 fn= 1 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.SurfaceView.applyOrMergeTransaction:1960 android.view.SurfaceView.-$$Nest$mapplyOrMergeTransaction:0 android.view.SurfaceView$SurfaceViewPositionUpdateListener.positionChanged:2029 
+D/VRI[MainActivity]@4819654(24247): Received frameDrawingCallback syncResult=0 frameNum=1.
+I/VRI[MainActivity]@4819654(24247): mWNT: t=0xb400006e1251dc00 mBlastBufferQueue=0xb400006f28f64000 fn= 1 HdrRenderState mRenderHdrSdrRatio=1.0 caller= android.view.ViewRootImpl$12.onFrameDraw:15561 android.view.ThreadedRenderer$1.onFrameDraw:751 <bottom of call stack> 
+I/VRI[MainActivity]@4819654(24247): Setting up sync and frameCommitCallback
+I/BLASTBufferQueue(24247): [VRI[MainActivity]@4819654#0](f:0,a:0,s:0) onFrameAvailable the first frame is available
+I/VRI[MainActivity]@4819654(24247): Received frameCommittedCallback lastAttemptedDrawFrameNum=1 didProduceBuffer=true
+D/HWUI    (24247): CFMS:: SetUp Pid : 24247    Tid : 24292
+D/VRI[MainActivity]@4819654(24247): reportDrawFinished seqId=0
+I/HWUI    (24247): Davey! duration=853ms; Flags=1, FrameTimelineVsyncId=51046975, IntendedVsync=219709693932619, Vsync=219710505043722, InputEventId=0, HandleInputStart=219710510361693, AnimationStart=219710510362885, PerformTraversalsStart=219710510363616, DrawStart=219710522908270, FrameDeadline=219709705043730, FrameStartTime=219710509976424, FrameInterval=11111111, WorkloadTarget=11111111, SyncQueued=219710524542808, SyncStart=219710524637231, IssueDrawCommandsStart=219710528787078, SwapBuffers=219710544408654, FrameCompleted=219710547386693, DequeueBufferDuration=5256154, QueueBufferDuration=691500, GpuCompleted=219710547386693, SwapBuffersCompleted=219710545203578, DisplayPresentTime=0, CommandSubmissionCompleted=219710544408654, 
+D/VRI[MainActivity]@4819654(24247): mThreadedRenderer.initializeIfNeeded()#2 mSurface={isValid=true 0xb400006e20230900}
+D/InputMethodManagerUtils(24247): startInputInner - Id : 0
+I/InputMethodManager(24247): startInputInner - IInputMethodManagerGlobalInvoker.startInputOrWindowGainedFocus
+D/InsetsController(24247): hide(ime())
+I/ImeTracker(24247): com.vasapps.legalnotes:4689ee30: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+D/ProfileInstaller(24247): Installing profile for com.vasapps.legalnotes
+W/apps.legalnotes(24247): ClassLoaderContext classpath size mismatch. expected=1, found=0 (DLC[];PCL[base.apk*2360322137]{PCL[/system/framework/org.apache.http.legacy.jar*3558608148]#PCL[/system/framework/com.android.location.provider.jar*1880069816]#PCL[/system/framework/com.android.media.remotedisplay.jar*1838754544]#PCL[/system_ext/framework/com.android.extensions.appfunctions.jar*1527718805]#PCL[/system_ext/framework/androidx.window.extensions.jar*3568414278]#PCL[/system_ext/framework/androidx.window.sidecar.jar*1234091387]} | DLC[];PCL[])
+D/InputTransport(24247): Input channel constructed: 'ClientS', fd=203
+I/DynamiteModule(24247): Considering local module com.google.android.gms.ads.dynamite:0 and remote module com.google.android.gms.ads.dynamite:260480602
+I/DynamiteModule(24247): Selected remote version of com.google.android.gms.ads.dynamite, version >= 260480602
+V/DynamiteModule(24247): Dynamite loader version >= 2, using loadModule2NoCrashUtils
+W/apps.legalnotes(24247): ClassLoaderContext classpath element checksum mismatch. expected=2360322137, found=3416913127 (DLC[];PCL[base.apk*2360322137]{PCL[/system/framework/org.apache.http.legacy.jar*3558608148]#PCL[/system/framework/com.android.location.provider.jar*1880069816]#PCL[/system/framework/com.android.media.remotedisplay.jar*1838754544]#PCL[/system_ext/framework/com.android.extensions.appfunctions.jar*1527718805]#PCL[/system_ext/framework/androidx.window.extensions.jar*3568414278]#PCL[/system_ext/framework/androidx.window.sidecar.jar*1234091387]} | DLC[];PCL[/data/app/~~ly8OV9kFoEQoaDkcSkNkwA==/com.vasapps.legalnotes-BajJdnXLCGD9GhoFfSk7xQ==/base.apk*3416913127]{PCL[/system_ext/framework/androidx.window.extensions.jar*3568414278]#PCL[/system_ext/framework/androidx.window.sidecar.jar*1234091387]})
+D/ApplicationLoaders(24247): Returning zygote-cached class loader: /system/framework/org.apache.http.legacy.jar
+D/ApplicationLoaders(24247): Returning zygote-cached class loader: /system/framework/com.android.location.provider.jar
+D/ApplicationLoaders(24247): Returning zygote-cached class loader: /system/framework/com.android.media.remotedisplay.jar
+D/nativeloader(24247): Configuring clns-11 for other apk /system_ext/framework/com.android.extensions.appfunctions.jar. target_sdk_version=37, uses_libraries=ALL, library_path=/data/app/~~9Hc9VuOG0F6uys_cdmsFnQ==/com.google.android.gms-9QxNM5aX4i3Cedw6QONqAw==/lib/arm64:/data/app/~~9Hc9VuOG0F6uys_cdmsFnQ==/com.google.android.gms-9QxNM5aX4i3Cedw6QONqAw==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.gms
+D/nativeloader(24247): Extending system_exposed_libraries: libface_landmark.arcsoft.so:liblow_light_hdr.arcsoft.so:libhigh_dynamic_range.arcsoft.so:libFacialAttributeDetection.arcsoft.so:libaudiomirroring_jni.audiomirroring.samsung.so:libBeauty_v4.camera.samsung.so:libexifa.camera.samsung.so:libjpega.camera.samsung.so:libOpenCv.camera.samsung.so:libC2paDps.camera.samsung.so:libImageScreener.camera.samsung.so:libFace_Landmark_API.camera.samsung.so:libHpr_RecGAE_cvFeature_v1.0.camera.samsung.so:libHprFace_GAE_api.camera.samsung.so:libHprFace_GAE_jni.camera.samsung.so:libDLInterface_aidl.camera.samsung.so:libImageTagger.camera.samsung.so:libSceneDetector_v1.camera.samsung.so:libQREngine.camera.samsung.so:libFood.camera.samsung.so:libFoodDetector.camera.samsung.so:libportrait_controller_engine.camera.samsung.so:libportrait_controller_interface_jni.camera.samsung.so:libsecbufferhandler.camera.samsung.so:libPortraitSolution.camera.samsung.so:libsrib_CNNInterface.camera.samsung.so:libsrib_humanaware_engine.camera.samsung.so:libInteractiv
+D/ApplicationLoaders(24247): Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+D/ApplicationLoaders(24247): Returning zygote-cached class loader: /system_ext/framework/androidx.window.sidecar.jar
+D/nativeloader(24247): Configuring clns-12 for other apk /data/app/~~9Hc9VuOG0F6uys_cdmsFnQ==/com.google.android.gms-9QxNM5aX4i3Cedw6QONqAw==/base.apk. target_sdk_version=37, uses_libraries=, library_path=/data/app/~~9Hc9VuOG0F6uys_cdmsFnQ==/com.google.android.gms-9QxNM5aX4i3Cedw6QONqAw==/lib/arm64:/data/app/~~9Hc9VuOG0F6uys_cdmsFnQ==/com.google.android.gms-9QxNM5aX4i3Cedw6QONqAw==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand:/data/user/0/com.google.android.gms
+D/ConnectivityManager(24247): StackLog: [android.net.ConnectivityManager.sendRequestForNetwork(ConnectivityManager.java:4744)] [android.net.ConnectivityManager.registerDefaultNetworkCallbackForUid(ConnectivityManager.java:5469)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5436)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5410)] [com.google.android.gms.ads.internal.state.h.f(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:113)] [com.google.android.gms.ads.nonagon.b.A(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:378)] [com.google.android.gms.ads.nonagon.b.a(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:9)] [com.google.android.gms.ads.nonagon.shim.ac.<init>(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:6)] [com.google.android.gms.ads.ChimeraAdManagerCreatorImpl.newAdManagerByType(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:124)] [com.google.android.gms.ads.internal.client.bh.br(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:90)] [m84.bil.onTransact(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:21)]
+I/Ads     (24247): Updating ad debug logging enablement.
+I/Ads     (24247): Use RequestConfiguration.Builder().setTestDeviceIds(Arrays.asList("8A74D6DCEA1A12FDB3B2BFAD2AAB507C")) to get test ads on this device.
+W/Ads     (24247): Update ad debug logging enablement as false
+D/ConnectivityManager(24247): StackLog: [android.net.ConnectivityManager.sendRequestForNetwork(ConnectivityManager.java:4744)] [android.net.ConnectivityManager.registerDefaultNetworkCallbackForUid(ConnectivityManager.java:5469)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5436)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5410)] [m84.bgu.<init>(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:11)] [m84.bgu.a(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:13)] [m84.bgd.u(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:18)] [m84.bgd.a(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:26)] [com.google.android.gms.ads.internal.k.c(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:67)] [com.google.android.gms.ads.internal.k.run(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:80)] [java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1100)] [java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)] [java.lang.Thread.run(Thread.java:1572)]
+I/WebViewFactory(24247): Loading com.google.android.webview version 150.0.7871.46 (code 787104603)
+V/ResourcesManager(24247): The following library key has been added: ResourcesKey{ mHash=fcece02b mResDir=null mSplitDirs=[] mOverlayDirs=[] mLibDirs=[/data/app/~~AcBUTECpAaoxqojRq2dkdA==/com.google.android.webview-zIjqcnx618OScwGZcAU0OQ==/base.apk,/system/framework/android.test.base.jar,/system_ext/framework/androidx.window.extensions.jar] mDisplayId=0 mOverrideConfig=v36 mCompatInfo={450dpi always-compat} mLoaders=[]}
+D/ApplicationLoaders(24247): Returning zygote-cached class loader: /system/framework/android.test.base.jar
+D/ApplicationLoaders(24247): Returning zygote-cached class loader: /system_ext/framework/androidx.window.extensions.jar
+D/nativeloader(24247): Configuring clns-13 for other apk /data/app/~~AcBUTECpAaoxqojRq2dkdA==/com.google.android.webview-zIjqcnx618OScwGZcAU0OQ==/base.apk. target_sdk_version=36, uses_libraries=, library_path=/data/app/~~AcBUTECpAaoxqojRq2dkdA==/com.google.android.webview-zIjqcnx618OScwGZcAU0OQ==/lib/arm64:/data/app/~~AcBUTECpAaoxqojRq2dkdA==/com.google.android.webview-zIjqcnx618OScwGZcAU0OQ==/base.apk!/lib/arm64-v8a, permitted_path=/data:/mnt/expand
+D/nativeloader(24247): Configuring clns-14 for other apk . target_sdk_version=36, uses_libraries=ALL, library_path=, permitted_path=/data:/mnt/expand
+D/nativeloader(24247): Extending system_exposed_libraries: libface_landmark.arcsoft.so:liblow_light_hdr.arcsoft.so:libhigh_dynamic_range.arcsoft.so:libFacialAttributeDetection.arcsoft.so:libaudiomirroring_jni.audiomirroring.samsung.so:libBeauty_v4.camera.samsung.so:libexifa.camera.samsung.so:libjpega.camera.samsung.so:libOpenCv.camera.samsung.so:libC2paDps.camera.samsung.so:libImageScreener.camera.samsung.so:libFace_Landmark_API.camera.samsung.so:libHpr_RecGAE_cvFeature_v1.0.camera.samsung.so:libHprFace_GAE_api.camera.samsung.so:libHprFace_GAE_jni.camera.samsung.so:libDLInterface_aidl.camera.samsung.so:libImageTagger.camera.samsung.so:libSceneDetector_v1.camera.samsung.so:libQREngine.camera.samsung.so:libFood.camera.samsung.so:libFoodDetector.camera.samsung.so:libportrait_controller_engine.camera.samsung.so:libportrait_controller_interface_jni.camera.samsung.so:libsecbufferhandler.camera.samsung.so:libPortraitSolution.camera.samsung.so:libsrib_CNNInterface.camera.samsung.so:libsrib_humanaware_engine.camera.samsung.so:libInteractiv
+D/nativeloader(24247): Load /data/user/0/com.vasapps.legalnotes/app_pccache/5/F332DAB9DB9FBFD849CE09DCC1705010D37B6EDB/pcam.jar!/libd60018A43166A.so using isolated ns clns-14 (caller=/data/user/0/com.vasapps.legalnotes/app_pccache/5/F332DAB9DB9FBFD849CE09DCC1705010D37B6EDB/pcam.jar): ok
+I/cr_WVCFactoryProvider(24247): version=150.0.7871.46 (787104603) minSdkVersion=29 multiprocess=true packageId=2 splits=<none>
+D/nativeloader(24247): Load /data/app/~~AcBUTECpAaoxqojRq2dkdA==/com.google.android.webview-zIjqcnx618OScwGZcAU0OQ==/base.apk!/lib/arm64-v8a/libwebviewchromium.so using class loader ns clns-13 (caller=/data/app/~~AcBUTECpAaoxqojRq2dkdA==/com.google.android.webview-zIjqcnx618OScwGZcAU0OQ==/base.apk): ok
+D/nativeloader(24247): Load /system/lib64/libwebviewchromium_plat_support.so using class loader ns clns-13 (caller=/data/app/~~AcBUTECpAaoxqojRq2dkdA==/com.google.android.webview-zIjqcnx618OScwGZcAU0OQ==/base.apk): ok
+I/chromium(24247): [0719/235503.170201:INFO:android_webview/browser/variations/variations_seed_loader.cc:67] Failed to open file for reading.: No such file or directory (2)
+I/cr_LibraryLoader(24247): Successfully loaded native library
+I/cr_CachingUmaRecorder(24247): Flushed 44 samples from 20 histograms, 0 samples were dropped.
+W/Ads     (24247): Invoke Firebase method getInstance error.
+W/Ads     (24247): The Google Mobile Ads SDK will not integrate with Firebase. Admob/Firebase integration requires the latest Firebase SDK jar, but Firebase SDK is either missing or out of date
+W/ServiceBindIntentUtils(24247): Dynamic lookup for intent failed for action: com.google.android.gms.ads.service.CACHE
+W/ServiceBindIntentUtils(24247): Dynamic lookup for intent failed for action: com.google.android.gms.ads.service.START
+I/cr_ChildProcLH(24247): ScopedServiceBindingBatch.tryActivate: false
+I/cr_CombinedPProvider(24247): #registerProvider() provider:WV.wk@f590671 isPolicyCacheEnabled:false policyProvidersSize:0
+I/cr_PolicyProvider(24247): #setManagerAndSource() 0
+I/cr_policy(24247): registerReceiver succeeded after 2ms
+I/cr_DisplayManager(24247): Is Display Topology available: false
+I/cr_CombinedPProvider(24247): #linkNativeInternal() 1
+I/cr_AppResProvider(24247): #getApplicationRestrictionsFromUserManager() Bundle[EMPTY_PARCEL]
+I/cr_PolicyProvider(24247): #notifySettingsAvailable() 0
+I/cr_CombinedPProvider(24247): #onSettingsAvailable() 0
+I/cr_CombinedPProvider(24247): #flushPolicies()
+W/chromium(24247): [WARNING:android_webview/browser/network_service/net_helpers.cc:137] HTTP Cache size is: 20971520
+W/chromium(24247): [WARNING:android_webview/browser/cookie_manager.cc:372] Transferring cookies from provisional CookieManager to network service. For issues with the provisional CookieManager, see crbug.com/478873476.
+D/ConnectivityManager(24247): StackLog: [android.net.ConnectivityManager.sendRequestForNetwork(ConnectivityManager.java:4744)] [android.net.ConnectivityManager.registerDefaultNetworkCallbackForUid(ConnectivityManager.java:5469)] [android.net.ConnectivityManager.registerDefaultNetworkCallback(ConnectivityManager.java:5436)] [WV.po1.e(chromium-SystemWebViewGoogle6432.aab-stable-787104603:37)] [WV.po1.a(chromium-SystemWebViewGoogle6432.aab-stable-787104603:1)] [org.chromium.android_webview.AwContentsLifecycleNotifier.onFirstWebViewCreated(chromium-SystemWebViewGoogle6432.aab-stable-787104603:19)] [J.N.JJ(Native Method)] [org.chromium.android_webview.AwContents.<init>(chromium-SystemWebViewGoogle6432.aab-stable-787104603:616)] [com.android.webview.chromium.t.run(chromium-SystemWebViewGoogle6432.aab-stable-787104603:387)] [WV.b53.run(chromium-SystemWebViewGoogle6432.aab-stable-787104603:13)] [org.chromium.base.task.PostTask.e(chromium-SystemWebViewGoogle6432.aab-stable-787104603:18)] [WV.c53.a(chromium-SystemWebViewGoogle6432.aab-stable-787104603:18)] [com.android.webview.chromium.WebViewChromiumFactoryProvider.a(chromium-SystemWebViewGoogle6432.aab-stable-787104603:3)] [com.android.webview.chromium.WebViewChromium.init(chromium-SystemWebViewGoogle6432.aab-stable-787104603:155)] [android.webkit.WebView.<init>(WebView.java:474)] [android.webkit.WebView.<init>(WebView.java:389)] [android.webkit.WebView.<init>(WebView.java:370)] [android.webkit.WebView.<init>(WebView.java:356)] [android.webkit.WebView.<init>(WebView.java:345)] [com.google.android.gms.ads.internal.webview.ai.<init>(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:1)] [com.google.android.gms.ads.internal.webview.u.cp(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:59)] [com.google.android.gms.ads.internal.webview.w.a(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:65)] [com.google.android.gms.ads.nonagon.ad.webview.l.b(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:44)] [com.google.android.gms.ads.nonagon.render.y.a(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:51)] [m84.duk.g(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:3)] [m84.dum.run(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:38)]
+D/ConnectivityManager(24247): StackLog: [android.net.ConnectivityManager.sendRequestForNetwork(ConnectivityManager.java:4744)] [android.net.ConnectivityManager.sendRequestForNetwork(ConnectivityManager.java:4912)] [android.net.ConnectivityManager.registerNetworkCallback(ConnectivityManager.java:5329)] [WV.po1.e(chromium-SystemWebViewGoogle6432.aab-stable-787104603:86)] [WV.po1.a(chromium-SystemWebViewGoogle6432.aab-stable-787104603:1)] [org.chromium.android_webview.AwContentsLifecycleNotifier.onFirstWebViewCreated(chromium-SystemWebViewGoogle6432.aab-stable-787104603:19)] [J.N.JJ(Native Method)] [org.chromium.android_webview.AwContents.<init>(chromium-SystemWebViewGoogle6432.aab-stable-787104603:616)] [com.android.webview.chromium.t.run(chromium-SystemWebViewGoogle6432.aab-stable-787104603:387)] [WV.b53.run(chromium-SystemWebViewGoogle6432.aab-stable-787104603:13)] [org.chromium.base.task.PostTask.e(chromium-SystemWebViewGoogle6432.aab-stable-787104603:18)] [WV.c53.a(chromium-SystemWebViewGoogle6432.aab-stable-787104603:18)] [com.android.webview.chromium.WebViewChromiumFactoryProvider.a(chromium-SystemWebViewGoogle6432.aab-stable-787104603:3)] [com.android.webview.chromium.WebViewChromium.init(chromium-SystemWebViewGoogle6432.aab-stable-787104603:155)] [android.webkit.WebView.<init>(WebView.java:474)] [android.webkit.WebView.<init>(WebView.java:389)] [android.webkit.WebView.<init>(WebView.java:370)] [android.webkit.WebView.<init>(WebView.java:356)] [android.webkit.WebView.<init>(WebView.java:345)] [com.google.android.gms.ads.internal.webview.ai.<init>(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:1)] [com.google.android.gms.ads.internal.webview.u.cp(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:59)] [com.google.android.gms.ads.internal.webview.w.a(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:65)] [com.google.android.gms.ads.nonagon.ad.webview.l.b(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:44)] [com.google.android.gms.ads.nonagon.render.y.a(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:51)] [m84.duk.g(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:3)] [m84.dum.run(:com.google.android.gms.policy_ads_fdr_dynamite@260480608@260480602017.868869642.868869642:38)]
+W/cr_media(24247): BLUETOOTH_CONNECT permission is missing.
+W/cr_media(24247): getBluetoothAdapter() requires BLUETOOTH permission
+W/cr_media(24247): registerBluetoothIntentsIfNeeded: Requires BLUETOOTH permission
+D/AudioSystem(24247): onNewService: media.audio_policy service obtained 0xb400006eda2e3580
+D/AudioSystem(24247): getService: IAudioPolicyService retrieved: 0xb400006eda2e3580  cached: 0xb400006eda2e3580
+I/cr_AppResProvider(24247): #getApplicationRestrictionsFromUserManager() Bundle[EMPTY_PARCEL]
+I/cr_PolicyProvider(24247): #notifySettingsAvailable() 0
+I/cr_CombinedPProvider(24247): #onSettingsAvailable() 0
+I/cr_CombinedPProvider(24247): #flushPolicies()
+I/CameraManagerGlobal(24247): Connecting to camera service
+D/VendorTagDescriptor(24247): addVendorDescriptor: vendor tag id 8932615658386372252 added
+I/VRI[MainActivity]@4819654(24247): call setFrameRateCategory for touch hint category=high hint, reason=touch, vri=VRI[MainActivity]@4819654
+I/CameraManager(24247): registerAvailabilityCallback: Is device callback = false
+I/CameraManagerGlobal(24247): Camera 0 facing CAMERA_FACING_BACK state now CAMERA_STATE_CLOSED for client com.whatsapp API Level 2 User Id 0Device Id 0
+I/CameraManagerGlobal(24247): Camera 1 facing CAMERA_FACING_FRONT state now CAMERA_STATE_CLOSED for client android.system API Level 2 User Id 0Device Id 0
+I/CameraManagerGlobal(24247): postSingleUpdate device: camera id 0 status STATUS_PRESENT
+I/CameraManagerGlobal(24247): postSingleUpdate device: camera id 1 status STATUS_PRESENT
+I/CameraManagerGlobal(24247): postSingleUpdate device: camera id 2 status STATUS_PRESENT
+I/CameraManagerGlobal(24247): postSingleUpdate device: camera id 3 status STATUS_PRESENT
+I/CameraManagerGlobal(24247): Camera 2 facing CAMERA_FACING_BACK state now CAMERA_STATE_CLOSED for client android.system API Level 2 User Id 0Device Id 0
+I/CameraManagerGlobal(24247): Camera 23 facing CAMERA_FACING_BACK state now CAMERA_STATE_CLOSED for client android.system API Level 2 User Id 0Device Id 0
+I/CameraManagerGlobal(24247): Camera 3 facing CAMERA_FACING_FRONT state now CAMERA_STATE_CLOSED for client android.system API Level 2 User Id 0Device Id 0
+I/CameraManagerGlobal(24247): Camera 4 facing CAMERA_FACING_FRONT state now CAMERA_STATE_CLOSED for client android.system API Level 2 User Id 0Device Id 0
+I/CameraManagerGlobal(24247): Camera 56 facing CAMERA_FACING_BACK state now CAMERA_STATE_CLOSED for client android.system API Level 2 User Id 0Device Id 0
+I/CameraManagerGlobal(24247): Camera 58 facing CAMERA_FACING_BACK state now CAMERA_STATE_CLOSED for client android.system API Level 2 User Id 0Device Id 0
+I/CameraManagerGlobal(24247): Camera 60 facing CAMERA_FACING_BACK state now CAMERA_STATE_CLOSED for client android.system API Level 2 User Id 0Device Id 0
+W/AudioCapabilities(24247): Unsupported mediaType audio/x-ima
+W/AudioCapabilities(24247): Unsupported mediaType audio/mpeg-L1
+W/AudioCapabilities(24247): Unsupported mediaType audio/mpeg-L2
+W/VideoCapabilities(24247): Unsupported mime video/wvc1
+W/VideoCapabilities(24247): Unsupported mime video/x-ms-wmv
+W/VideoCapabilities(24247): Unrecognized profile/level 32768/256 for video/mp4v-es
+W/AudioCapabilities(24247): Unsupported mediaType audio/x-ima
+W/AudioCapabilities(24247): Unsupported mediaType audio/mpeg-L1
+W/AudioCapabilities(24247): Unsupported mediaType audio/mpeg-L2
+W/VideoCapabilities(24247): Unsupported mime video/wvc1
+W/VideoCapabilities(24247): Unsupported mime video/x-ms-wmv
+W/VideoCapabilities(24247): Unrecognized profile/level 32768/256 for video/mp4v-es
+W/AudioCapabilities(24247): Unsupported mime audio/x-ima
+W/AudioCapabilities(24247): Unsupported mime audio/mpeg-L1
+W/AudioCapabilities(24247): Unsupported mime audio/mpeg-L2
+W/VideoCapabilities(24247): Unsupported mime video/wvc1
+W/VideoCapabilities(24247): Unsupported mime video/x-ms-wmv
+W/VideoCapabilities(24247): Unrecognized profile/level 32768/256 for video/mp4v-es
+W/VideoCapabilities(24247): Unsupported mime video/wvc1
+I/Ads     (24247): JS: The jsLoaded GMSG has been sent (https://googleads.g.doubleclick.net/mads/static/sdk/native/sdk-core-v40.html:1067)
+I/chromium(24247): [INFO:CONSOLE:1067] "The jsLoaded GMSG has been sent", source: https://googleads.g.doubleclick.net/mads/static/sdk/native/sdk-core-v40.html (1067)
+I/Choreographer(24247): Skipped 87 frames!  The application may be doing too much work on its main thread.
+I/apps.legalnotes(24247): Background concurrent mark compact GC freed 10MB AllocSpace bytes, 57(2152KB) LOS objects, 49% free, 6425KB/12MB, paused 2.003ms,6.015ms total 201.191ms
+W/apps.legalnotes(24247): Long monitor contention with owner ThreadPoolForeg (24726) at WV.f93 WV.f93.a()(chromium-SystemWebViewGoogle6432.aab-stable-787104603:22) waiters=0 in org.chromium.net.AndroidCertVerifyResult WV.g93.e(byte[][], java.lang.String, java.lang.String, byte[], byte[]) for 209ms
+
+I/DynamiteModule(24247): Considering local module com.google.android.gms.ads.dynamite:0 and remote module com.google.android.gms.ads.dynamite:260480602
+I/DynamiteModule(24247): Selected remote version of com.google.android.gms.ads.dynamite, version >= 260480602
+I/PlatformViewsChannel(24247): Using legacy platform view rendering strategy.
+I/PlatformViewsController(24247): Hosting view in view hierarchy for platform view: 0
+I/PlatformViewsController(24247): PlatformView is using SurfaceProducer backend
+W/libc    (24247): Access denied finding property "vendor.perf.ems.egg"
+W/libc    (24247): Access denied finding property "vendor.perf.ems.egg"
+D/NativeCustomFrequencyManager(24247): [NativeCFMS] BpCustomFrequencyManager::BpCustomFrequencyManager()
+D/HWUI    (24247): CFMS:: SetUp Pid : 24247    Tid : 24292
+I/HWUI    (24247): Using FreeType backend (prop=Auto)
+D/FlutterJNI(24247): Sending viewport metrics to the engine.
+D/SV[173094243 MainActivity](24247): skip updating surface, 5
+W/libc    (24247): Access denied finding property "vendor.perf.ems.egg"
+W/libc    (24247): Access denied finding property "vendor.perf.ems.egg"
+D/NativeCustomFrequencyManager(24247): [NativeCFMS] BpCustomFrequencyManager::BpCustomFrequencyManager()
+I/View    (24247): setRequestedFrameRate frameRate=NaN, this=com.google.android.gms.ads.internal.webview.ai{5236f70 VFEDHVC.. ........ 0,0-960,150}, caller=android.view.ViewGroup.setRequestedFrameRate:10045 WV.xf.p:1 WV.wg.h:117 WV.wg.onDraw:7 com.android.webview.chromium.WebViewChromium.onDraw:19 
+D/HWUI    (24247): CFMS:: SetUp Pid : 24247    Tid : 24292
+I/Choreographer(24247): Skipped 45 frames!  The application may be doing too much work on its main thread.
+D/FlutterJNI(24247): Sending viewport metrics to the engine.
+D/SV[173094243 MainActivity](24247): skip updating surface, 5
+I/View    (24247): setRequestedFrameRate frameRate=NaN, this=com.google.android.gms.ads.internal.webview.ai{5236f70 VFEDHVC.. ........ 0,0-960,150}, caller=android.view.ViewGroup.setRequestedFrameRate:10045 WV.xf.p:1 WV.wg.h:117 WV.wg.onDraw:7 com.android.webview.chromium.WebViewChromium.onDraw:19 
+D/SV[173094243 MainActivity](24247): skip updating surface, 5
+I/View    (24247): setRequestedFrameRate frameRate=NaN, this=com.google.android.gms.ads.internal.webview.ai{5236f70 VFEDHVC.. ........ 0,0-960,150}, caller=android.view.ViewGroup.setRequestedFrameRate:10045 WV.xf.p:1 WV.wg.h:117 WV.wg.onDraw:7 com.android.webview.chromium.WebViewChromium.onDraw:19 
+I/View    (24247): setRequestedFrameRate frameRate=NaN, this=com.google.android.gms.ads.internal.webview.ai{5236f70 VFEDHVC.. ........ 0,0-960,150}, caller=android.view.ViewGroup.setRequestedFrameRate:10045 WV.xf.p:1 WV.wg.h:117 WV.wg.onDraw:7 com.android.webview.chromium.WebViewChromium.onDraw:19 
+I/View    (24247): setRequestedFrameRate frameRate=NaN, this=com.google.android.gms.ads.internal.webview.ai{5236f70 VFEDHVC.. ........ 0,0-960,150}, caller=android.view.ViewGroup.setRequestedFrameRate:10045 WV.xf.p:1 WV.wg.h:117 WV.wg.onDraw:7 com.android.webview.chromium.WebViewChromium.onDraw:19 
+
+══╡ EXCEPTION CAUGHT BY WIDGETS LIBRARY ╞═══════════════════════════════════════════════════════════
+The following assertion was thrown building AddEditHearingScreen(dirty, state:
+_AddEditHearingScreenState#9761a):
+There should be exactly one item with [DropdownButton]'s value: 3.
+Either zero or 2 or more [DropdownMenuItem]s were detected with the same value
+'package:flutter/src/material/dropdown.dart':
+Failed assertion: line 1852 pos 10: 'items == null ||
+             items.isEmpty ||
+             (initialValue == null && value == null) ||
+             items
+                     .where((DropdownMenuItem<T> item) => item.value == (initialValue ?? value))
+                     .length ==
+                 1'
+
+The relevant error-causing widget was:
+  AddEditHearingScreen
+  AddEditHearingScreen:file:///home/ssp/Desktop/Projects_app/vasapps/legalnotes/lib/features/hearings/presentation/hearings_screen.dart:89:25
+
+When the exception was thrown, this was the stack:
+#2      new DropdownButtonFormField (package:flutter/src/material/dropdown.dart:1852:10)
+#3      _AddEditHearingScreenState.build (package:paralegal_app/features/hearings/presentation/add_edit_hearing_screen.dart:199:15)
+#4      StatefulElement.build (package:flutter/src/widgets/framework.dart:5931:27)
+#5      ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5817:15)
+#6      StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#7      Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#8      ComponentElement._firstBuild (package:flutter/src/widgets/framework.dart:5799:5)
+#9      StatefulElement._firstBuild (package:flutter/src/widgets/framework.dart:5973:11)
+#10     ComponentElement.mount (package:flutter/src/widgets/framework.dart:5793:5)
+...     Normal element mounting (260 frames)
+#270    Element.inflateWidget (package:flutter/src/widgets/framework.dart:4587:20)
+#271    MultiChildRenderObjectElement.inflateWidget (package:flutter/src/widgets/framework.dart:7264:36)
+#272    Element.updateChild (package:flutter/src/widgets/framework.dart:4059:18)
+#273    Element.updateChildren (package:flutter/src/widgets/framework.dart:4255:32)
+#274    MultiChildRenderObjectElement.update (package:flutter/src/widgets/framework.dart:7295:17)
+#275    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#276    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#277    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#278    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#279    StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#280    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#281    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#282    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#283    ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#284    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#285    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#286    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#287    ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#288    _InheritedNotifierElement.update (package:flutter/src/widgets/inherited_notifier.dart:108:11)
+#289    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#290    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#291    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#292    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#293    StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#294    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#295    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#296    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#297    ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#298    _InheritedNotifierElement.update (package:flutter/src/widgets/inherited_notifier.dart:108:11)
+#299    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#300    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#301    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#302    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#303    StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#304    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#305    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#306    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#307    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#308    StatefulElement.update (package:flutter/src/widgets/framework.dart:6007:5)
+#309    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#310    SingleChildRenderObjectElement.update (package:flutter/src/widgets/framework.dart:7122:14)
+#311    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#312    SingleChildRenderObjectElement.update (package:flutter/src/widgets/framework.dart:7122:14)
+#313    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#314    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#315    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#316    ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#317    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#318    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#319    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#320    ProxyElement.update (package:flutter/src/widgets/framework.dart:6149:5)
+#321    Element.updateChild (package:flutter/src/widgets/framework.dart:4037:15)
+#322    ComponentElement.performRebuild (package:flutter/src/widgets/framework.dart:5841:16)
+#323    StatefulElement.performRebuild (package:flutter/src/widgets/framework.dart:5982:11)
+#324    Element.rebuild (package:flutter/src/widgets/framework.dart:5529:7)
+#325    BuildScope._tryRebuild (package:flutter/src/widgets/framework.dart:2750:15)
+#326    BuildScope._flushDirtyElements (package:flutter/src/widgets/framework.dart:2807:11)
+#327    BuildOwner.buildScope (package:flutter/src/widgets/framework.dart:3111:18)
+#328    WidgetsBinding.drawFrame (package:flutter/src/widgets/binding.dart:1571:21)
+#329    RendererBinding._handlePersistentFrameCallback (package:flutter/src/rendering/binding.dart:509:5)
+#330    SchedulerBinding._invokeFrameCallback (package:flutter/src/scheduler/binding.dart:1430:15)
+#331    SchedulerBinding.handleDrawFrame (package:flutter/src/scheduler/binding.dart:1345:9)
+#332    SchedulerBinding._handleDrawFrame (package:flutter/src/scheduler/binding.dart:1198:5)
+#333    _invoke (dart:ui/hooks.dart:423:13)
+#334    PlatformDispatcher._drawFrame (dart:ui/platform_dispatcher.dart:447:5)
+#335    _drawFrame (dart:ui/hooks.dart:395:31)
+(elided 2 frames from class _AssertionError)
+
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+D/WindowOnBackDispatcher(24247): setTopOnBackInvokedCallback (unwrapped): io.flutter.embedding.android.FlutterActivity$1@5d72feb
+D/SV[173094243 MainActivity](24247): skip updating surface, 5
+D/SV[173094243 MainActivity](24247): skip updating surface, 5
+D/SV[173094243 MainActivity](24247): skip updating surface, 5
+D/SV[173094243 MainActivity](24247): skip updating surface, 5
+D/SV[173094243 MainActivity](24247): skip updating surface, 5
+D/SV[173094243 MainActivity](24247): skip updating surface, 5
+D/SV[173094243 MainActivity](24247): skip updating surface, 5
+D/SV[173094243 MainActivity](24247): skip updating surface, 5
+D/SV[173094243 MainActivity](24247): skip updating surface, 5
+I/View    (24247): setRequestedFrameRate frameRate=NaN, this=com.google.android.gms.ads.internal.webview.ai{5236f70 VFEDHVC.. ........ 0,0-960,150}, caller=android.view.ViewGroup.setRequestedFrameRate:10045 WV.xf.p:1 WV.wg.h:117 WV.wg.onDraw:7 com.android.webview.chromium.WebViewChromium.onDraw:19 
+I/VRI[MainActivity]@4819654(24247): call setFrameRateCategory for touch hint category=no preference, reason=boost timeout, vri=VRI[MainActivity]@4819654
+I/View    (24247): setRequestedFrameRate frameRate=NaN, this=com.google.android.gms.ads.internal.webview.ai{5236f70 VFEDHVC.. ........ 0,0-960,150}, caller=android.view.ViewGroup.setRequestedFrameRate:10045 WV.xf.p:1 WV.wg.h:117 WV.wg.onDraw:7 com.android.webview.chromium.WebViewChromium.onDraw:19 
+I/View    (24247): setRequestedFrameRate frameRate=NaN, this=com.google.android.gms.ads.internal.webview.ai{5236f70 VFEDHVC.. ........ 0,0-960,150}, caller=android.view.ViewGroup.setRequestedFrameRate:10045 WV.xf.p:1 WV.wg.h:117 WV.wg.onDraw:7 com.android.webview.chromium.WebViewChromium.onDraw:19 
+I/View    (24247): setRequestedFrameRate frameRate=NaN, this=com.google.android.gms.ads.internal.webview.ai{5236f70 VFEDHVC.. ........ 0,0-960,150}, caller=android.view.ViewGroup.setRequestedFrameRate:10045 WV.xf.p:1 WV.wg.h:117 WV.wg.onDraw:7 com.android.webview.chromium.WebViewChromium.onDraw:19 
+I/View    (24247): setRequestedFrameRate frameRate=NaN, this=com.google.android.gms.ads.internal.webview.ai{5236f70 VFEDHVC.. ........ 0,0-960,150}, caller=android.view.ViewGroup.setRequestedFrameRate:10045 WV.xf.p:1 WV.wg.h:117 WV.wg.onDraw:7 com.android.webview.chromium.WebViewChromium.onDraw:19 
+I/View    (24247): setRequestedFrameRate frameRate=NaN, this=com.google.android.gms.ads.internal.webview.ai{5236f70 VFEDHVC.. ........ 0,0-960,150}, caller=android.view.ViewGroup.setRequestedFrameRate:10045 WV.xf.p:1 WV.wg.h:117 WV.wg.onDraw:7 com.android.webview.chromium.WebViewChromium.onDraw:19 
+I/View    (24247): setRequestedFrameRate frameRate=NaN, this=com.google.android.gms.ads.internal.webview.ai{5236f70 VFEDHVC.. ........ 0,0-960,150}, caller=android.view.ViewGroup.setRequestedFrameRate:10045 WV.xf.p:1 WV.wg.h:117 WV.wg.onDraw:7 com.android.webview.chromium.WebViewChromium.onDraw:19 
+I/View    (24247): setRequestedFrameRate frameRate=NaN, this=com.google.android.gms.ads.internal.webview.ai{5236f70 VFEDHVC.. ........ 0,0-960,150}, caller=android.view.ViewGroup.setRequestedFrameRate:10045 WV.xf.p:1 WV.wg.h:117 WV.wg.onDraw:7 com.android.webview.chromium.WebViewChromium.onDraw:19 
+I/View    (24247): setRequestedFrameRate frameRate=NaN, this=com.google.android.gms.ads.internal.webview.ai{5236f70 VFEDHVC.. ........ 0,0-960,150}, caller=android.view.ViewGroup.setRequestedFrameRate:10045 WV.xf.p:1 WV.wg.h:117 WV.wg.onDraw:7 com.android.webview.chromium.WebViewChromium.onDraw:19 

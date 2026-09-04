@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:intl/intl.dart';
 import '../../../core/services/database/hive_service.dart';
 import '../../../shared/models/client.dart';
 import 'client_detail_screen.dart';
 import 'add_edit_client_screen.dart';
-import 'import_clients_screen.dart';
 
 class ClientsListScreen extends StatefulWidget {
   const ClientsListScreen({super.key});
@@ -18,6 +16,7 @@ class _ClientsListScreenState extends State<ClientsListScreen> {
   late final Box<Client> _clientsBox;
   final TextEditingController _searchCtrl = TextEditingController();
   bool _showSearch = false;
+  bool _showArchived = false;
 
   @override
   void initState() {
@@ -68,12 +67,14 @@ class _ClientsListScreenState extends State<ClientsListScreen> {
   Widget build(BuildContext context) {
     final query = _searchCtrl.text.trim().toLowerCase();
     final clients = _clientsBox.values
-        .where((c) =>
-            query.isEmpty ||
-            c.fullName.toLowerCase().contains(query) ||
-            c.phone.toLowerCase().contains(query) ||
-            c.email.toLowerCase().contains(query) ||
-            c.matterDescription.toLowerCase().contains(query))
+        .where((c) {
+          if (!_showArchived && c.isArchived) return false;
+          if (query.isEmpty) return true;
+          return c.fullName.toLowerCase().contains(query) ||
+              c.phone.toLowerCase().contains(query) ||
+              c.email.toLowerCase().contains(query) ||
+              c.matterDescription.toLowerCase().contains(query);
+        })
         .toList();
 
     // Sort: overdue prospective first, then urgent, then rest
@@ -124,11 +125,19 @@ class _ClientsListScreenState extends State<ClientsListScreen> {
                 setState(() => _showSearch = false);
               },
             )
-          else
+          else ...[
+            IconButton(
+              icon: Icon(
+                _showArchived ? Icons.archive : Icons.archive_outlined,
+                color: _showArchived ? Colors.orange : Colors.white),
+              tooltip: _showArchived ? 'Hide Archived' : 'Show Archived',
+              onPressed: () => setState(() => _showArchived = !_showArchived),
+            ),
             IconButton(
               icon: const Icon(Icons.search, color: Colors.white),
               onPressed: () => setState(() => _showSearch = true),
             ),
+          ],
         ],
       ),
       body: clients.isEmpty
@@ -197,11 +206,31 @@ class _ClientsListScreenState extends State<ClientsListScreen> {
                             const TextStyle(color: Colors.white),
                       ),
                     ),
-                    title: Text(
-                      client.fullName,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF000080)),
+                    title: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            client.fullName,
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF000080)),
+                          ),
+                        ),
+                        if (client.isArchived)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.orange.shade100,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Text('ARCHIVED',
+                                style: TextStyle(
+                                    fontSize: 9,
+                                    color: Colors.orange,
+                                    fontWeight: FontWeight.bold)),
+                          ),
+                      ],
                     ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
