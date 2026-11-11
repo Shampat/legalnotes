@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../../../core/services/database/hive_service.dart';
 import '../../../shared/models/client.dart';
 import '../../conflict_check/domain/conflict_check_service.dart';
+import '../../hearings/presentation/add_edit_hearing_screen.dart';
 
 class AddEditClientScreen extends StatefulWidget {
   final Client? client;
@@ -128,6 +129,7 @@ class _AddEditClientScreenState extends State<AddEditClientScreen> {
       return;
     }
 
+    int? newClientKey;
     // --- Ontario Conflict Check before save ---
     final conflict = ConflictCheckService.fullConflictCheck(
       name: '${firstNameCtrl.text.trim()} ${lastNameCtrl.text.trim()}'.trim(),
@@ -176,7 +178,7 @@ class _AddEditClientScreenState extends State<AddEditClientScreen> {
         ..nonEngagementLetterSent = nonEngagementLetterSent
         ..save();
     } else {
-      HiveService.clientsBox.add(Client(
+      newClientKey = await HiveService.clientsBox.add(Client(
         firstName: firstNameCtrl.text.trim(),
         lastName: lastNameCtrl.text.trim(),
         phone: phoneCtrl.text.trim(),
@@ -195,7 +197,39 @@ class _AddEditClientScreenState extends State<AddEditClientScreen> {
         nonEngagementLetterSent: nonEngagementLetterSent,
       ));
     }
-    Navigator.pop(context, true);
+    // --- HTA Flow: Offer to create hearing right after new client ---
+    if (!isEdit) {
+      final createHearing = await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Client Saved'),
+          content: Text('Create a hearing for ${firstNameCtrl.text.trim()} ${lastNameCtrl.text.trim()}?\n\nPlate: ${plateCtrl.text.trim().isEmpty ? '—' : plateCtrl.text.trim()}\nTicket: ${ticketCtrl.text.trim().isEmpty ? '—' : ticketCtrl.text.trim()}'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Done')),
+            TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Create Hearing')),
+          ],
+        ),
+      );
+      if (!mounted) return;
+      if (createHearing == true) {
+        final plate = plateCtrl.text.trim();
+        final ticket = ticketCtrl.text.trim();
+        final title = '${firstNameCtrl.text.trim()} ${lastNameCtrl.text.trim()} - HTA ${ticket.isNotEmpty ? ticket : plate}'.trim();
+        if (!mounted) return;
+        // Replace client screen with hearing screen, prefilled
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => AddEditHearingScreen(
+              prefillClientKey: newClientKey!,
+              prefillCaseTitle: title,
+            ),
+          ),
+        );
+        return;
+      }
+    }
+    if (mounted) Navigator.pop(context, true);
   }
 
   Widget _sectionCard({
