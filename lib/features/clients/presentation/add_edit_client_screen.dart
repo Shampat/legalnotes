@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../core/services/database/hive_service.dart';
 import '../../../shared/models/client.dart';
+import '../../conflict_check/domain/conflict_check_service.dart';
 
 class AddEditClientScreen extends StatefulWidget {
   final Client? client;
@@ -87,7 +88,7 @@ class _AddEditClientScreenState extends State<AddEditClientScreen> {
     super.dispose();
   }
 
-  void _save() {
+  Future<void> _save() async {
     setState(() {
       firstNameError = firstNameCtrl.text.trim().isEmpty;
       lastNameError = lastNameCtrl.text.trim().isEmpty;
@@ -127,6 +128,32 @@ class _AddEditClientScreenState extends State<AddEditClientScreen> {
       return;
     }
 
+    // --- Ontario Conflict Check before save ---
+    final conflict = ConflictCheckService.fullConflictCheck(
+      name: '${firstNameCtrl.text.trim()} ${lastNameCtrl.text.trim()}'.trim(),
+      phone: phoneCtrl.text.trim(),
+      email: emailCtrl.text.trim(),
+      dateOfBirth: dobCtrl.text.trim(),
+      licensePlate: plateCtrl.text.trim(),
+      ticketNumber: ticketCtrl.text.trim(),
+      fileNumber: fileNumberCtrl.text.trim(),
+    );
+    if (conflict['hasConflict'] == true) {
+      final isHard = conflict['hasHardConflict'] == true;
+      final details = (conflict['conflicts'] as List).join('\n');
+      final proceed = await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: Text(isHard ? 'HARD CONFLICT - Do Not Proceed?' : 'Possible Conflict'),
+          content: Text('Found matching record(s):\n\n$details\n\nSave anyway?'),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+            TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Save Anyway')),
+          ],
+        ),
+      );
+      if (proceed != true) return;
+    }
     if (isEdit) {
       final client = widget.client!;
       client
