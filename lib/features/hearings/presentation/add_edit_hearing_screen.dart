@@ -4,6 +4,7 @@ import '../../../core/services/database/hive_service.dart';
 import '../../../shared/models/hearing.dart';
 import '../../../shared/models/client.dart';
 import '../../../core/config/canada_holidays.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AddEditHearingScreen extends StatefulWidget {
   final Hearing? hearing;
@@ -89,15 +90,39 @@ class _AddEditHearingScreenState extends State<AddEditHearingScreen> {
         context: context,
         builder: (_) => AlertDialog(
           title: const Text('Court Closed'),
-          content: Text(
-            '${pickedDate.day}/${pickedDate.month}/${pickedDate.year} - $holiday\n'
-            'Courts are closed in ${CanadaHolidays.currentProvince} on this day.\n\n'
-            'Suggested next business day: ${next.day}/${next.month}/${next.year}\n\n'
-            'Pick another date?',
+          content: SingleChildScrollView(
+            child: Text(
+              '${pickedDate.day}/${pickedDate.month}/${pickedDate.year} - $holiday\n'
+              'Courts are closed in ${CanadaHolidays.currentProvince} on this day.\n\n'
+              'Per O. Reg. 722/94, r.2 - Ontario POA Appeals.\n\n'
+              'Suggested next business day: ${next.day}/${next.month}/${next.year}\n\n'
+              'Pick another date?',
+            ),
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Use This Date Anyway')),
-            TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Pick Another Date')),
+            TextButton(
+              onPressed: () async {
+                final uri = Uri.parse('https://www.ontario.ca/laws/regulation/940722');
+                if (await canLaunchUrl(uri)) {
+                  await launchUrl(uri, mode: LaunchMode.inAppBrowserView);
+                }
+              },
+              child: const Text('View O. Reg. 722/94'),
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Pick Another Date'),
+              ),
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Use This Date Anyway'),
+              ),
+            ),
           ],
         ),
       );
