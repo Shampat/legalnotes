@@ -3,6 +3,7 @@ import '../../conflict_check/domain/conflict_check_service.dart';
 import '../../../core/services/database/hive_service.dart';
 import '../../../shared/models/hearing.dart';
 import '../../../shared/models/client.dart';
+import '../../../core/config/canada_holidays.dart';
 
 class AddEditHearingScreen extends StatefulWidget {
   final Hearing? hearing;
@@ -80,6 +81,30 @@ class _AddEditHearingScreenState extends State<AddEditHearingScreen> {
       lastDate: DateTime(2035),
     );
     if (pickedDate == null) return;
+    // Prevention at source: Court Closed check
+    final holiday = CanadaHolidays.holidayName(pickedDate);
+    if (holiday != null && mounted) {
+      final next = CanadaHolidays.nextBusinessDay(pickedDate);
+      final chooseAnother = await showDialog<bool>(
+        context: context,
+        builder: (_) => AlertDialog(
+          title: const Text('Court Closed'),
+          content: Text(
+            '${pickedDate.day}/${pickedDate.month}/${pickedDate.year} - $holiday\n'
+            'Courts are closed in ${CanadaHolidays.currentProvince} on this day.\n\n'
+            'Suggested next business day: ${next.day}/${next.month}/${next.year}\n\n'
+            'Pick another date?',
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Use This Date Anyway')),
+            TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Pick Another Date')),
+          ],
+        ),
+      );
+      if (chooseAnother == true) {
+        return _pickDateTime();
+      }
+    }
     if (!mounted) return;
     final pickedTime = await showTimePicker(
       context: context,
