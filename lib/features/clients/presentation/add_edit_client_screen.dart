@@ -21,6 +21,10 @@ class _AddEditClientScreenState extends State<AddEditClientScreen> {
   late TextEditingController dobCtrl;
   late TextEditingController companyCtrl;
   late TextEditingController matterCtrl;
+  late TextEditingController plateCtrl;
+  late TextEditingController ticketCtrl;
+  late TextEditingController fileNumberCtrl;
+  late TextEditingController licenceCtrl;
 
   String clientStatus = 'prospective';
   DateTime? consultationDate;
@@ -54,6 +58,10 @@ class _AddEditClientScreenState extends State<AddEditClientScreen> {
     dobCtrl = TextEditingController(text: client?.dateOfBirth ?? '');
     companyCtrl = TextEditingController(text: client?.companyName ?? '');
     matterCtrl = TextEditingController(text: client?.matterDescription ?? '');
+    plateCtrl = TextEditingController(text: client?.licensePlate ?? '');
+    ticketCtrl = TextEditingController(text: client?.ticketNumber ?? '');
+    fileNumberCtrl = TextEditingController(text: client?.fileNumber ?? '');
+    licenceCtrl = TextEditingController(text: client?.driversLicence ?? '');
 
     clientStatus = client?.clientStatus ?? 'prospective';
     consultationDate = client?.consultationDate ?? DateTime.now();
@@ -71,6 +79,10 @@ class _AddEditClientScreenState extends State<AddEditClientScreen> {
     dobCtrl.dispose();
     companyCtrl.dispose();
     matterCtrl.dispose();
+    plateCtrl.dispose();
+    ticketCtrl.dispose();
+    fileNumberCtrl.dispose();
+    licenceCtrl.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -127,6 +139,10 @@ class _AddEditClientScreenState extends State<AddEditClientScreen> {
         ..matterDescription = matterCtrl.text.trim()
         ..dateOfBirth = dobCtrl.text.trim().isEmpty ? null : dobCtrl.text.trim()
         ..companyName = companyCtrl.text.trim().isEmpty ? null : companyCtrl.text.trim()
+        ..licensePlate = plateCtrl.text.trim().isEmpty ? null : plateCtrl.text.trim().toUpperCase()
+        ..ticketNumber = ticketCtrl.text.trim().isEmpty ? null : ticketCtrl.text.trim()
+        ..fileNumber = fileNumberCtrl.text.trim().isEmpty ? null : fileNumberCtrl.text.trim()
+        ..driversLicence = licenceCtrl.text.trim().isEmpty ? null : licenceCtrl.text.trim()
         ..clientStatus = clientStatus
         ..consultationDate = consultationDate
         ..retainerSigned = retainerSigned
@@ -142,6 +158,10 @@ class _AddEditClientScreenState extends State<AddEditClientScreen> {
         matterDescription: matterCtrl.text.trim(),
         dateOfBirth: dobCtrl.text.trim().isEmpty ? null : dobCtrl.text.trim(),
         companyName: companyCtrl.text.trim().isEmpty ? null : companyCtrl.text.trim(),
+        licensePlate: plateCtrl.text.trim().isEmpty ? null : plateCtrl.text.trim().toUpperCase(),
+        ticketNumber: ticketCtrl.text.trim().isEmpty ? null : ticketCtrl.text.trim(),
+        fileNumber: fileNumberCtrl.text.trim().isEmpty ? null : fileNumberCtrl.text.trim(),
+        driversLicence: licenceCtrl.text.trim().isEmpty ? null : licenceCtrl.text.trim(),
         clientStatus: clientStatus,
         consultationDate: consultationDate,
         retainerSigned: retainerSigned,
@@ -455,6 +475,36 @@ class _AddEditClientScreenState extends State<AddEditClientScreen> {
               _customField(
                 controller: companyCtrl,
                 label: 'Company Name (if applicable)',
+              ),
+              const SizedBox(height: 10),
+              _customField(
+                controller: plateCtrl,
+                label: 'Licence Plate (Ontario)',
+                hint: 'e.g. ABC123',
+                onChanged: (v) {
+                  final up = v.toUpperCase();
+                  if (v != up) {
+                    plateCtrl.value = TextEditingValue(text: up, selection: TextSelection.collapsed(offset: up.length));
+                  }
+                },
+              ),
+              const SizedBox(height: 10),
+              _customField(
+                controller: ticketCtrl,
+                label: 'Ticket Number (HTA)',
+                hint: 'e.g. 123456',
+              ),
+              const SizedBox(height: 10),
+              _customField(
+                controller: fileNumberCtrl,
+                label: 'File Number',
+                hint: 'e.g. POA-2026-001',
+              ),
+              const SizedBox(height: 10),
+              _customField(
+                controller: licenceCtrl,
+                label: "Driver's Licence",
+                hint: 'e.g. S1234-56789-12345',
               ),
               const SizedBox(height: 10),
               _customField(
