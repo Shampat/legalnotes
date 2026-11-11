@@ -77,6 +77,14 @@ class ConflictCheckService {
     return {'hasConflict': hits.isNotEmpty, 'hasHardConflict': hits.any((h) => h['score'] == 'HARD'), 'hits': hits, 'conflicts': hits.map((h) => '[${h['score']}] ${h['detail']} (matched on: ${h['matchedOn']})').toList()};
   }
 
+  // Legacy callers expect List<Client> for a single opposing-party name.
+  // Kept for hearings + reports + conflict report screen.
+  static List<Client> checkOpposingPartyConflict(String opposingPartyName) {
+    if (opposingPartyName.trim().isEmpty) return [];
+    final box = Hive.box<Client>('clients');
+    return box.values.where((c) => _nameMatches(opposingPartyName, c.fullName)).toList();
+  }
+
   static List<Hearing> checkClientConflict(String clientName) {
     if (clientName.trim().isEmpty) return [];
     final box = Hive.box<Hearing>('hearings');
