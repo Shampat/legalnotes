@@ -86,7 +86,11 @@ class _HearingsScreenState extends State<HearingsScreen>
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => AddEditHearingScreen(hearing: hearing),
+        builder: (_) => AddEditHearingScreen(
+          hearing: hearing,
+          // If creating new, carry the calendar's selected day - no double-pick
+          prefillDate: hearing == null ? _selectedDay : null,
+        ),
       ),
     );
     setState(() {});
@@ -204,10 +208,16 @@ class _HearingsScreenState extends State<HearingsScreen>
                 ),
           floatingActionButton: _clientsBox.isEmpty
               ? null
-              : FloatingActionButton(
+              : FloatingActionButton.extended(
                   backgroundColor: const Color(0xFF000080),
                   onPressed: () => _openHearing(),
-                  child: const Icon(Icons.add, color: Colors.white),
+                  icon: const Icon(Icons.add, color: Colors.white),
+                  label: Text(
+                    _selectedDay != null
+                        ? 'Add on ${_selectedDay!.day}/${_selectedDay!.month}'
+                        : 'Add Hearing',
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
         );
       },

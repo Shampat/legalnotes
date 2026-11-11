@@ -11,12 +11,14 @@ class AddEditHearingScreen extends StatefulWidget {
   final int? prefillClientKey;
   final String? prefillCaseTitle;
   final int? linkedFromHearingKey;
+  final DateTime? prefillDate;
   const AddEditHearingScreen({
     super.key,
     this.hearing,
     this.prefillClientKey,
     this.prefillCaseTitle,
     this.linkedFromHearingKey,
+    this.prefillDate,
   });
 
   @override
@@ -57,7 +59,9 @@ class _AddEditHearingScreenState extends State<AddEditHearingScreen> {
             .map((op) => _OpposingPartyEntry(name: op.name, phone: op.phone ?? ''))
             .toList()
         : [_OpposingPartyEntry()];
-    date = widget.hearing?.dateTime;
+    date = widget.hearing?.dateTime ?? (widget.prefillDate != null
+        ? DateTime(widget.prefillDate!.year, widget.prefillDate!.month, widget.prefillDate!.day, 9, 0)
+        : null);
     selectedClientKey = widget.hearing?.clientKey == 0
         ? null
         : (widget.hearing?.clientKey ?? widget.prefillClientKey);
